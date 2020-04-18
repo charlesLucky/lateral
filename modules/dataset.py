@@ -26,7 +26,7 @@ def _parse_tfrecord(binary_img=False, is_ccrop=False,cfg=None):
 
 def _transform_images(is_ccrop=False,cfg=None):
     def transform_images(x_train):
-        x_train = tf.image.resize(x_train, (cfg['input_size_w']+10, cfg['input_size_h']+10))
+        x_train = tf.image.resize(x_train, (cfg['input_size_w']+20, cfg['input_size_h']+20))
         x_train = tf.image.random_crop(x_train, (cfg['input_size_w'], cfg['input_size_h'], 3))
         x_train = tf.image.random_flip_left_right(x_train)
         x_train = tf.image.random_saturation(x_train, 0.6, 1.4)

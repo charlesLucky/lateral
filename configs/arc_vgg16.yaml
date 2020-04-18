@@ -16,10 +16,10 @@ train_dataset: './data/tent_300_bin.tfrecord'
 binary_img: True
 num_classes: 299
 num_samples: 1848
-epochs: 20
+epochs: 30
 base_lr: 0.01
 w_decay: !!float 5e-4
-save_steps: 5000
+save_steps: 500
 
 # test
 test_dataset: './data/test_dataset'
