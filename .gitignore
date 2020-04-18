@@ -1,0 +1,10 @@
+.vscode/*
+checkpoints/*
+logs/*
+**/__pycache__/*
+**/*.tfrecord
+.idea
+.embeddings
+.dataset
+.venv
+.data
