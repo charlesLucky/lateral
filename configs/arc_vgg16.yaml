@@ -5,8 +5,8 @@ batch_size: 4
 input_size_w: 320
 input_size_h: 75
 embd_shape: 512
-sub_name: 'arc_vgg6'
-backbone_type: 'VGG16' # 'ResNet50', 'MobileNetV2' VGG16
+sub_name: 'arc_vgg19'
+backbone_type: 'VGG19' # 'ResNet50', 'MobileNetV2' VGG16
 head_type: ArcHead # 'ArcHead', 'NormHead'
 is_ccrop: True # central-cropping or not
 
