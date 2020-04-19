@@ -15,11 +15,12 @@ is_ccrop: True # central-cropping or not
 train_dataset: './data/tent_300_bin.tfrecord'
 binary_img: True
 num_classes: 299
-num_samples: 18480
+#1848
+num_samples: 60000
 epochs: 100
 base_lr: 0.01
 w_decay: !!float 5e-4
-save_steps: 5000
+save_steps: 1000
 
 # test
 test_dataset: './data/test_dataset'
