@@ -1,5 +1,16 @@
 import tensorflow as tf
+from shutil import copy,rmtree,copytree,copy2
+import os
+import pathlib
+import math
+import random
+from tensorflow.keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img, save_img
 
+
+directory_str_tent = 'data/SESSION_TENT_NEW/SESSION1_LT'
+directory_str_aqua = 'data/SESSION_AQUARIUM/SESSION1_LT'
+ST_DIR_TENT = 'data/SESSION_TENT_NEW/SESSION1_ST/'
+ST_DIR_AQUA = 'data/SESSION_AQUARIUM/SESSION1_ST/'
 
 def _parse_tfrecord(binary_img=False, is_ccrop=False,cfg=None):
     def parse_tfrecord(tfrecord):
@@ -57,15 +68,280 @@ def load_tfrecord_dataset(tfrecord_name, batch_size,
     return dataset
 
 
-def load_fake_dataset(size):
-    """load fake dataset"""
-    x_train = tf.image.decode_jpeg(
-        open('./data/BruceLee.JPG', 'rb').read(), channels=3)
-    x_train = tf.expand_dims(x_train, axis=0)
-    x_train = tf.image.resize(x_train, (size, size))
 
-    labels = [0]
-    y_train = tf.convert_to_tensor(labels, tf.float32)
-    y_train = tf.expand_dims(y_train, axis=0)
 
-    return tf.data.Dataset.from_tensor_slices((x_train, y_train))
+def addPrefix(path,prefix):
+    for root, subdirs, files in os.walk(path):
+        for name in files:
+            curr_fld = os.path.basename(root)
+            oldname = os.path.join(path, curr_fld, name)
+            splt_name = name.split('.')
+            myname = '_'.join([prefix, splt_name[0][-1], splt_name[0], curr_fld + '.' + splt_name[1]])
+            newname = os.path.join(path, curr_fld, myname)
+            os.rename(oldname, newname)
+#args = parser.parse_args()
+#byIDorByImages = args.byIDorByImages
+#train_weight = args.train_weight
+#print(byIDorByImages)
+def generateDataset(byIDorByImages=True,train_weight=0.5,train_dir_tent='tmp_tent/train/',test_dir_tent='tmp_tent/test/',includeST=True, includeTentnAquaBoth=False):
+    test_dir_tent = 'tmp_tent/test/'
+    train_dir_aqua = 'tmp_aqua/train/'
+    test_dir_aqua = 'tmp_aqua/test/'
+
+    # remove any file exist
+    if os.path.exists(train_dir_tent):
+        rmtree(train_dir_tent)
+        rmtree(train_dir_aqua)
+        rmtree(test_dir_tent)
+        rmtree(test_dir_aqua)
+
+    # check_folder(train_dir)
+    check_folder(test_dir_tent)
+    check_folder(test_dir_aqua)
+
+    # first copy ST to train
+    if includeST:
+        copytree(ST_DIR_TENT, train_dir_tent)
+        pre = "tent_st"
+        addPrefix(train_dir_tent, pre)
+
+
+    SPLIT_WEIGHTS_INTRA_ID = (
+        train_weight,1-train_weight, 0.0)  # train cv val vs test for each identity, 50% are taken as train and 50% as test
+    SPLIT_WEIGHTS_INTER_ID = (
+        train_weight, 1 - train_weight, 0.0)  # train cv val vs test for each identity, 50% are taken as train and 50% as test
+
+    if byIDorByImages==1:
+        train_ID_list, test_ID_list = splitID(directory_str_tent,SPLIT_WEIGHTS_INTRA_ID)
+        print(train_ID_list)
+        print("above IDs are used in training, remianing will be used for testing, in dir tmp_tent/test/*")
+
+        generateDatasetBySplitingIdentity('data/SESSION_TENT_NEW/SESSION1_LT', train_ID_list,train_dir_tent,test_dir_tent,pre='sess1')
+        generateDatasetBySplitingIdentity('data/SESSION_TENT_NEW/SESSION2', train_ID_list,train_dir_tent,test_dir_tent,pre='sess2')
+        generateDatasetBySplitingIdentity('data/SESSION_TENT_NEW/SESSION3', train_ID_list,train_dir_tent,test_dir_tent,pre='sess3')
+        generateDatasetBySplitingIdentity('data/SESSION_TENT_NEW/SESSION4', train_ID_list,train_dir_tent,test_dir_tent,pre='sess4')
+
+
+        # generateDatasetBySplitingIdentity('data/SESSION_AQUARIUM/SESSION1_LT', train_ID_list, train_dir_aqua, test_dir_aqua,pre='sess1')
+        # generateDatasetBySplitingIdentity('data/SESSION_AQUARIUM/SESSION2', train_ID_list, train_dir_aqua, test_dir_aqua,pre='sess2')
+        # generateDatasetBySplitingIdentity('data/SESSION_AQUARIUM/SESSION3', train_ID_list, train_dir_aqua, test_dir_aqua,pre='sess3')
+        # generateDatasetBySplitingIdentity('data/SESSION_AQUARIUM/SESSION4', train_ID_list, train_dir_aqua, test_dir_aqua,pre='sess4')
+
+    else:
+        print('All IDs are used in training')
+
+
+
+
+def check_folder(dir_name):
+    if not os.path.exists(dir_name):
+        os.makedirs(dir_name)
+    return dir_name
+
+def generateDatasetBySplitingIdentity(directory_str,train_list,train_dir,test_dir,pre='sess1'):
+    g = os.walk(directory_str)
+    for path, dir_list, file_list in g:
+        for id_dir in dir_list:
+            if train_list.__contains__(id_dir): # in train set, maybe the filename will be same, hence we need to rename each session
+                data_dir = pathlib.Path(os.path.join(path, id_dir))
+                pic_list = list(data_dir.glob('*.png'))
+                for images in pic_list:
+                    #print(images)
+                    dst_dir = os.path.join(train_dir, id_dir)
+                    check_folder(dst_dir)
+                    head, tail = os.path.split(images)
+                    finalpath=os.path.join(dst_dir, pre+tail)
+                    copy(images, finalpath)
+
+            else:
+                data_dir = pathlib.Path(os.path.join(path, id_dir))
+                pic_list = list(data_dir.glob('*.png'))
+                for images in pic_list:
+                    dst_dir = os.path.join(test_dir,str.split(directory_str,'/')[-1], id_dir)
+                    check_folder(dst_dir)
+                    copy(images, dst_dir)
+
+
+def splitID(directory_str,SPLIT_WEIGHTS_INTRA_ID):
+    dir_list = [o for o in os.listdir(directory_str) if os.path.isdir(os.path.join(directory_str, o))]
+    ids=len(dir_list)
+    train_num = math.floor(ids * SPLIT_WEIGHTS_INTRA_ID[0])
+    train_ID_list = random.sample(dir_list, k=train_num)
+    test_ID_list=[]
+    for anyid in dir_list:
+        if not train_ID_list.__contains__(anyid):
+            test_ID_list.append(anyid)
+    return  train_ID_list,test_ID_list
+
+def getfilelist(dirs):
+  Filelist = []
+  for home, dirs, files in os.walk(dirs):
+    for filename in files:
+# 文件名列表，包含完整路径
+      Filelist.append(os.path.join(home, filename))
+# # 文件名列表，只包含文件名
+# Filelist.append( filename)
+  return Filelist
+
+def aug_data(orig_path,SAVE_PATH):
+    alllist = getfilelist(orig_path)
+    num_imgs = len(alllist);
+    print('total number of images:', num_imgs)
+
+    num_aug_per_img = 5
+    train_datagen = ImageDataGenerator(brightness_range=[0.5, 1.5],
+                                       rotation_range=5,
+                                       width_shift_range=0.01,
+                                       height_shift_range=0.00,
+                                       shear_range=0.2,
+                                       zoom_range=0.3,
+                                       channel_shift_range=10,
+                                       horizontal_flip=False,
+                                       fill_mode='nearest')
+
+    for file in alllist:
+        img = load_img(file)
+
+        x = img_to_array(img)
+        x = x.reshape((1,) + x.shape)
+        i = 0
+        path = os.path.normpath(file)
+        parts = path.split(os.sep)
+        print('processing:' + parts[-1])
+        check_folder(SAVE_PATH + '/' + parts[-2])
+        save_img(SAVE_PATH + '/' + parts[-2] + '/' + parts[-1], img)
+        for batch in train_datagen.flow(x, batch_size=16, save_to_dir=SAVE_PATH + '/' + parts[-2],
+                                        save_prefix=parts[-2],
+                                        save_format='png'):
+            i += 1
+            if i > num_aug_per_img:
+                break
+
+def aug_data_sess1(orig_path,k,SAVE_PATH): # use k images from testing dataset as gallery and train the model into a classfication model for this ten IDs
+    subfolders = [f.path for f in os.scandir(orig_path) if f.is_dir()]
+    Filelist = []
+    for dirs in subfolders:
+        filename = random.choices(os.listdir(dirs), k=1)  # change dir name to whatever
+        print(filename)
+        for file in filename:
+            Filelist.append(os.path.join(dirs, file))
+    selected_Filelist = Filelist
+    num_imgs = len(selected_Filelist)
+    print('total number of images:', num_imgs)
+
+    num_aug_per_img = 20
+    train_datagen = ImageDataGenerator(brightness_range=[0.5, 1.5],
+                                       rotation_range=5,
+                                       width_shift_range=0.01,
+                                       height_shift_range=0.00,
+                                       shear_range=0.2,
+                                       zoom_range=0.3,
+                                       channel_shift_range=10,
+                                       horizontal_flip=True,
+                                       fill_mode='nearest')
+
+    for file in selected_Filelist:
+        img = load_img(file)
+
+        x = img_to_array(img)
+        x = x.reshape((1,) + x.shape)
+        i = 0
+        path = os.path.normpath(file)
+        parts = path.split(os.sep)
+        print('processing:' + parts[-1])
+        check_folder(SAVE_PATH + '/' + parts[-2])
+        save_img(SAVE_PATH + '/' + parts[-2] + '/' + parts[-1], img)
+        for batch in train_datagen.flow(x, batch_size=1, save_to_dir=SAVE_PATH + '/' + parts[-2],
+                                        save_prefix=parts[-2],
+                                        save_format='png'):
+            i += 1
+            if i > num_aug_per_img:
+                break
+
+def aug_data_sess(orig_path,k,SAVE_PATH):
+    subfolders = [f.path for f in os.scandir(orig_path) if f.is_dir()]
+    Filelist = []
+    for dirs in subfolders:
+        filename = random.choices(os.listdir(dirs), k=1)  # change dir name to whatever
+        print(filename)
+        for file in filename:
+            Filelist.append(os.path.join(dirs, file))
+    selected_Filelist = random.choices(Filelist, k=k)
+    #selected_Filelist = Filelist
+    num_imgs = len(selected_Filelist)
+    print('total number of images:', num_imgs)
+
+    num_aug_per_img = 20
+    train_datagen = ImageDataGenerator(brightness_range=[0.5, 1.5],
+                                       rotation_range=5,
+                                       width_shift_range=0.01,
+                                       height_shift_range=0.00,
+                                       shear_range=0.2,
+                                       zoom_range=0.3,
+                                       channel_shift_range=10,
+                                       horizontal_flip=True,
+                                       fill_mode='nearest')
+
+    for file in selected_Filelist:
+        img = load_img(file)
+
+        x = img_to_array(img)
+        x = x.reshape((1,) + x.shape)
+        i = 0
+        path = os.path.normpath(file)
+        parts = path.split(os.sep)
+        print('processing:' + parts[-1])
+        check_folder(SAVE_PATH + '/' + parts[-2])
+        save_img(SAVE_PATH + '/' + parts[-2] + '/' + parts[-1], img)
+        for batch in train_datagen.flow(x, batch_size=1, save_to_dir=SAVE_PATH + '/' + parts[-2],
+                                        save_prefix=parts[-2],
+                                        save_format='png'):
+            i += 1
+            if i > num_aug_per_img:
+                break
+
+def reportAccu(BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES,model_2ed):
+    test_data_dir = './tmp_tent/test/SESSION1_LT'
+    testloadData = LoadFishDataUtil(test_data_dir, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES)
+    sess1_test_dataset, sess1_class_num = testloadData.loadTestFishData()
+    scores_session1 =getAccByvote(test_data_dir,sess1_class_num, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES)
+
+    test_data_dir = './tmp_tent/test/SESSION2'
+    scores_session2 =getAccByvote(test_data_dir,sess1_class_num, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES)
+
+    test_data_dir = './tmp_tent/test/SESSION3'
+    scores_session3 = getAccByvote(test_data_dir,sess1_class_num, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES)
+
+    test_data_dir = './tmp_tent/test/SESSION4'
+    scores_session4 = getAccByvote(test_data_dir,sess1_class_num, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES)
+
+    return scores_session1,scores_session2,scores_session3,scores_session4
+
+def getAccByvote(test_data_dir,sess1_class_num, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES):
+    testloadData = LoadFishDataUtil(test_data_dir, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES)
+    sess1_test_dataset, sess1_class_num = testloadData.loadTestFishDataWithname()
+    ds_it = iter(sess1_test_dataset)
+
+    result = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 0: []}
+
+    num_batch = 0
+    for batch in sess1_test_dataset:
+        imgs, label = next(ds_it)
+        output = model_2ed.predict(imgs)
+        output = tf.argmax(tf.transpose(output))
+        for i in range(output.shape[0]):
+            mylabel = label[i].numpy()[0][0]
+            result[mylabel].append(int(output[i]))
+
+    # print(result)
+    final = {}
+    correct = 0
+    for i in range(sess1_class_num):
+        lst = result[i]
+        modeval = [x for x in set(lst) if lst.count(x) > 1]
+        modeval = modeval[0]
+        final[i] = modeval
+        if i == modeval:
+            correct = correct + 1
+    return correct/sess1_class_num
+
