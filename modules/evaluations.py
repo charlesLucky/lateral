@@ -175,8 +175,7 @@ def evaluate(embeddings, actual_issame, nrof_folds=10,cfg=None):
 def perform_val(embedding_size, batch_size, model,
                 carray, issame, nrof_folds=10, is_ccrop=False, is_flip=False,cfg=None):
     """perform val"""
-    if cfg['head_type']=='IoMHead':
-         embedding_size = int(embedding_size / cfg['q'])
+
     embeddings = np.zeros([len(carray), embedding_size])
 
     for idx in tqdm.tqdm(range(0, len(carray), batch_size)):
@@ -193,10 +192,8 @@ def perform_val(embedding_size, batch_size, model,
             batch = ccrop_batch(batch)
             emb_batch = model(batch)
         # print(emb_batch)
-        if cfg['head_type']=='IoMHead':
-            embeddings[idx:idx + batch_size] = emb_batch # not working? why
-        else:
-            embeddings[idx:idx + batch_size] = l2_norm(emb_batch)
+
+        embeddings[idx:idx + batch_size] = l2_norm(emb_batch)
         # embeddings[idx:idx + batch_size] = l2_norm(emb_batch)
         # print(embeddings)
     tpr, fpr, accuracy, best_thresholds,auc,eer = evaluate(

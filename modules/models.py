@@ -14,10 +14,7 @@ from tensorflow.keras.applications import (
 )
 from .layers import (
     BatchNormalization,
-    ArcMarginPenaltyLogists,
-    MaxIndexLinearForeward,
-    MaxIndexLinearTraining,
-    PermLayer
+    ArcMarginPenaltyLogists
 )
 
 

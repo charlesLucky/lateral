@@ -66,7 +66,7 @@ def main(_):
         learning_rate=learning_rate, momentum=0.9, nesterov=True)
     loss_fn = SoftmaxLoss()
 
-    ckpt_path = tf.train.latest_checkpoint('./checkpoints/' + cfg['sub_name'])
+    ckpt_path = tf.train.latest_checkpoint('./checkpoints/' + cfg['1st_sub_name'])
     if ckpt_path is not None:
         print("[*] load ckpt from {}".format(ckpt_path))
         model.load_weights(ckpt_path)
@@ -89,8 +89,10 @@ def main(_):
             with tf.GradientTape() as tape:
                 logist = model(inputs, training=True)
                 # print(logist)
-
-                reg_loss = tf.reduce_sum(model.losses)
+                if cfg['head_type'] == 'IoMHead':
+                    reg_loss = tf.cast(tf.reduce_sum(model.losses),tf.double)
+                else:
+                    reg_loss = tf.reduce_sum(model.losses)
                 pred_loss = loss_fn(labels, logist)
                 total_loss = pred_loss + reg_loss
 
