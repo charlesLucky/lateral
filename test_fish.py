@@ -63,6 +63,13 @@ def main(_):
                          training=True, cfg=cfg)
     model.summary(line_length=80)
 
+    logging.info("load fish LT sessions dataset.")
+    dataset_len = cfg['num_samples']
+    steps_per_epoch = dataset_len // cfg['batch_size']
+    train_dataset = dataset.load_tfrecord_dataset(
+        './data/New_ROI_LT1_bin.tfrecord', cfg['batch_size'], cfg['binary_img'],
+        is_ccrop=cfg['is_ccrop'], cfg=cfg)
+
     if FLAGS.mode == 'eager_tf':
         # Eager mode is great for debugging
         # Non eager graph mode is recommended for real training
