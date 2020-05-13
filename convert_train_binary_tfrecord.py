@@ -5,15 +5,15 @@ import tqdm
 import glob
 import random
 import tensorflow as tf
-from data.label_dict import Label_dict
 from modules.dataset import generateDataset, aug_data,aug_data_sess1
+
 
 flags.DEFINE_string('dataset_path', './data/tmp_tent/SESSION1_ST_AUGMENT',
                     'path to dataset')
 flags.DEFINE_string('output_path', './data/New_ROI_STLT_bin.tfrecord',
                     'path to ouput tfrecord')
 
-flags.DEFINE_string('stage', '1',
+flags.DEFINE_string('stage', '0',
                     'which stage,1,2')
 
 def _bytes_feature(value):
@@ -43,6 +43,9 @@ def make_example(img_str, source_id, filename):
 
 
 def main(_):
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+    os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
+
     dataset_path = ''
     output_path = ''
     if FLAGS.stage == '1':
@@ -61,6 +64,17 @@ def main(_):
         aug_data_sess1('./data/tmp_tent/test/SESSION1_LT', TRAIN_SAVE_PATH,k=2)  # augmentation
         dataset_path = TRAIN_SAVE_PATH
         output_path = './data/New_ROI_LT1_bin.tfrecord'
+    else:
+        print('[*] stage should be given!')
+        
+    
+    # below we code the label into consistent number start from 0
+    ids_list = [o for o in os.listdir(dataset_path) if os.path.isdir(os.path.join(dataset_path, o))]
+    cnt=0
+    Label_dict = {}
+    for id_str in ids_list:
+        Label_dict[id_str] = cnt
+        cnt = cnt+1
 
     ####################################################################################
 

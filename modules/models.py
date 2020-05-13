@@ -108,7 +108,7 @@ def ArcFishStackModel(basemodel = None,channels=3, num_classes=None, name='arcfa
                  w_decay=5e-4, use_pretrain=True, training=False,cfg=None):
     """Arc Face Model"""
     x = inputs = Input([cfg['input_size_w'], cfg['input_size_h'], channels], name='input_image')
-    x = basemodel(x)
+    embds = basemodel(x)
     assert num_classes is not None
     labels = Input([], name='label')
     if head_type == 'ArcHead':
