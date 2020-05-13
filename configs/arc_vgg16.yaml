@@ -1,7 +1,7 @@
 # general
 #IMG_WIDTH=320
 #IMG_HEIGHT=75
-batch_size: 64
+batch_size: 90
 input_size_w: 320
 input_size_h: 75
 embd_shape: 512
@@ -16,7 +16,7 @@ train_dataset: './data/New_ROI_STLT_bin.tfrecord'
 binary_img: True
 num_classes: 319
 #1848
-num_samples: 5000
+num_samples: 17233
 epochs: 100
 base_lr: 0.01
 w_decay: !!float 5e-4
