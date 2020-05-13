@@ -5,6 +5,7 @@ import pathlib
 import math
 import random
 from tensorflow.keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img, save_img
+import tqdm
 
 
 directory_str_tent = 'data/SESSION_TENT_NEW/SESSION1_LT'
@@ -83,17 +84,17 @@ def addPrefix(path,prefix):
 #byIDorByImages = args.byIDorByImages
 #train_weight = args.train_weight
 #print(byIDorByImages)
-def generateDataset(byIDorByImages=True,train_weight=0.5,train_dir_tent='tmp_tent/train/',test_dir_tent='tmp_tent/test/',includeST=True, includeTentnAquaBoth=False):
-    test_dir_tent = 'tmp_tent/test/'
-    train_dir_aqua = 'tmp_aqua/train/'
-    test_dir_aqua = 'tmp_aqua/test/'
+def generateDataset(byIDorByImages=True,train_weight=0.5,train_dir_tent='data/tmp_tent/train/',test_dir_tent='data/tmp_tent/test/',includeST=True, includeTentnAquaBoth=False):
+    test_dir_tent = 'data/tmp_tent/test/'
+    train_dir_aqua = 'data/tmp_aqua/train/'
+    test_dir_aqua = 'data/tmp_aqua/test/'
 
     # remove any file exist
     if os.path.exists(train_dir_tent):
         rmtree(train_dir_tent)
-        rmtree(train_dir_aqua)
+        # rmtree(train_dir_aqua)
         rmtree(test_dir_tent)
-        rmtree(test_dir_aqua)
+        # rmtree(test_dir_aqua)
 
     # check_folder(train_dir)
     check_folder(test_dir_tent)
@@ -183,12 +184,11 @@ def getfilelist(dirs):
 # Filelist.append( filename)
   return Filelist
 
-def aug_data(orig_path,SAVE_PATH):
+def aug_data(orig_path,SAVE_PATH,num_aug_per_img=5):
     alllist = getfilelist(orig_path)
     num_imgs = len(alllist);
     print('total number of images:', num_imgs)
 
-    num_aug_per_img = 5
     train_datagen = ImageDataGenerator(brightness_range=[0.5, 1.5],
                                        rotation_range=5,
                                        width_shift_range=0.01,
@@ -199,7 +199,7 @@ def aug_data(orig_path,SAVE_PATH):
                                        horizontal_flip=False,
                                        fill_mode='nearest')
 
-    for file in alllist:
+    for file in tqdm.tqdm(alllist):
         img = load_img(file)
 
         x = img_to_array(img)
@@ -207,7 +207,7 @@ def aug_data(orig_path,SAVE_PATH):
         i = 0
         path = os.path.normpath(file)
         parts = path.split(os.sep)
-        print('processing:' + parts[-1])
+        # print('processing:' + parts[-1])
         check_folder(SAVE_PATH + '/' + parts[-2])
         save_img(SAVE_PATH + '/' + parts[-2] + '/' + parts[-1], img)
         for batch in train_datagen.flow(x, batch_size=16, save_to_dir=SAVE_PATH + '/' + parts[-2],
@@ -240,7 +240,7 @@ def aug_data_sess1(orig_path,k,SAVE_PATH): # use k images from testing dataset a
                                        horizontal_flip=True,
                                        fill_mode='nearest')
 
-    for file in selected_Filelist:
+    for file in tqdm.tqdm(selected_Filelist):
         img = load_img(file)
 
         x = img_to_array(img)
@@ -248,7 +248,7 @@ def aug_data_sess1(orig_path,k,SAVE_PATH): # use k images from testing dataset a
         i = 0
         path = os.path.normpath(file)
         parts = path.split(os.sep)
-        print('processing:' + parts[-1])
+        # print('processing:' + parts[-1])
         check_folder(SAVE_PATH + '/' + parts[-2])
         save_img(SAVE_PATH + '/' + parts[-2] + '/' + parts[-1], img)
         for batch in train_datagen.flow(x, batch_size=1, save_to_dir=SAVE_PATH + '/' + parts[-2],
@@ -282,7 +282,7 @@ def aug_data_sess(orig_path,k,SAVE_PATH):
                                        horizontal_flip=True,
                                        fill_mode='nearest')
 
-    for file in selected_Filelist:
+    for file in tqdm.tqdm(selected_Filelist):
         img = load_img(file)
 
         x = img_to_array(img)
@@ -290,7 +290,7 @@ def aug_data_sess(orig_path,k,SAVE_PATH):
         i = 0
         path = os.path.normpath(file)
         parts = path.split(os.sep)
-        print('processing:' + parts[-1])
+        # print('processing:' + parts[-1])
         check_folder(SAVE_PATH + '/' + parts[-2])
         save_img(SAVE_PATH + '/' + parts[-2] + '/' + parts[-1], img)
         for batch in train_datagen.flow(x, batch_size=1, save_to_dir=SAVE_PATH + '/' + parts[-2],

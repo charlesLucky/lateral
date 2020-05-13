@@ -12,11 +12,11 @@ is_ccrop: True # central-cropping or not
 
 # train
 # url https://www.dropbox.com/s/9w1hb95t5ty8te7/tent_300_bin.tfrecord?dl=0
-train_dataset: './data/tent_300_bin.tfrecord'
+train_dataset: './data/New_ROI_STLT_bin.tfrecord'
 binary_img: True
-num_classes: 299
+num_classes: 319
 #1848
-num_samples: 60000
+num_samples: 5000
 epochs: 100
 base_lr: 0.01
 w_decay: !!float 5e-4
