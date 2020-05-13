@@ -13,7 +13,7 @@ flags.DEFINE_string('dataset_path', './data/tmp_tent/SESSION1_ST_AUGMENT',
 flags.DEFINE_string('output_path', './data/New_ROI_STLT_bin.tfrecord',
                     'path to ouput tfrecord')
 
-flags.DEFINE_string('stage', '1',
+flags.DEFINE_string('stage', 1,
                     'which stage,1,2')
 
 def _bytes_feature(value):
@@ -43,6 +43,7 @@ def make_example(img_str, source_id, filename):
 
 
 def main(_):
+
     if FLAGS.stage == 1:
         generateDataset(byIDorByImages=True,
                         train_weight=0.67)  # half as train and half as test  0.67-> 20 as train 10 as test
@@ -88,9 +89,6 @@ def main(_):
 
 if __name__ == '__main__':
     try:
-
-            app.run(main)
-
-
+        app.run(main)
     except SystemExit:
         pass
