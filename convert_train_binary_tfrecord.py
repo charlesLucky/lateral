@@ -43,7 +43,26 @@ def make_example(img_str, source_id, filename):
 
 
 def main(_):
-    dataset_path = FLAGS.dataset_path
+    if FLAGS.stage == 1:
+        generateDataset(byIDorByImages=True,
+                        train_weight=0.67)  # half as train and half as test  0.67-> 20 as train 10 as test
+
+        orig_path = './data/tmp_tent/train/'
+        SAVE_PATH = './data/tmp_tent/SESSION1_ST_AUGMENT'
+
+        aug_data(orig_path, SAVE_PATH, num_aug_per_img=5)
+        dataset_path = SAVE_PATH
+        output_path = './data/New_ROI_STLT_bin.tfrecord'
+
+    elif FLAGS.stage == 2:
+        TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
+        aug_data_sess1('./data/tmp_tent/test/SESSION1_LT', 0, TRAIN_SAVE_PATH)  # augmentation
+        dataset_path = TRAIN_SAVE_PATH
+        output_path = './data/New_ROI_LT1_bin.tfrecord'
+
+    ####################################################################################
+
+    # dataset_path = FLAGS.dataset_path
 
     if not os.path.isdir(dataset_path):
         logging.info('Please define valid dataset path.')
@@ -60,7 +79,7 @@ def main(_):
     random.shuffle(samples)
 
     logging.info('Writing tfrecord file...')
-    with tf.io.TFRecordWriter(FLAGS.output_path) as writer:
+    with tf.io.TFRecordWriter(output_path) as writer:
         for img_path, id_name, filename in tqdm.tqdm(samples):
             tf_example = make_example(img_str=open(img_path, 'rb').read(),
                                       source_id=Label_dict[id_name],
@@ -70,23 +89,6 @@ def main(_):
 if __name__ == '__main__':
     try:
 
-        if FLAGS.stage==1:
-            generateDataset(byIDorByImages=True,
-                            train_weight=0.67)  # half as train and half as test  0.67-> 20 as train 10 as test
-
-            orig_path = './data/tmp_tent/train/'
-            SAVE_PATH = './data/tmp_tent/SESSION1_ST_AUGMENT'
-
-            aug_data(orig_path, SAVE_PATH, num_aug_per_img=5)
-            FLAGS.dataset_path = SAVE_PATH
-
-            app.run(main)
-
-
-        elif FLAGS.stage==2:
-            TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
-            aug_data_sess1('./data/tmp_tent/test/SESSION1_LT', 0, TRAIN_SAVE_PATH)  # augmentation
-            FLAGS.dataset_path = TRAIN_SAVE_PATH
             app.run(main)
 
 
