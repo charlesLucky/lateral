@@ -63,7 +63,7 @@ def main(_):
                                       filename=str.encode(filename))
             writer.write(tf_example.SerializeToString())
 
-from modules.dataset import generateDataset, aug_data
+from ..modules.dataset import generateDataset, aug_data
 if __name__ == '__main__':
     try:
 
