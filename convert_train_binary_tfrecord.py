@@ -6,12 +6,15 @@ import glob
 import random
 import tensorflow as tf
 from data.label_dict import Label_dict
-from modules.dataset import generateDataset, aug_data
+from modules.dataset import generateDataset, aug_data,aug_data_sess1
 
 flags.DEFINE_string('dataset_path', './data/tmp_tent/SESSION1_ST_AUGMENT',
                     'path to dataset')
 flags.DEFINE_string('output_path', './data/New_ROI_STLT_bin.tfrecord',
                     'path to ouput tfrecord')
+
+flags.DEFINE_string('stage', '1',
+                    'which stage,1,2')
 
 def _bytes_feature(value):
     """Returns a bytes_list from a string / byte."""
@@ -67,12 +70,25 @@ def main(_):
 if __name__ == '__main__':
     try:
 
-        generateDataset(byIDorByImages=True, train_weight=0.67)  # half as train and half as test  0.67-> 20 as train 10 as test
+        if FLAGS.stage==1:
+            generateDataset(byIDorByImages=True,
+                            train_weight=0.67)  # half as train and half as test  0.67-> 20 as train 10 as test
 
-        orig_path = './data/tmp_tent/train/'
-        SAVE_PATH = './data/tmp_tent/SESSION1_ST_AUGMENT'
+            orig_path = './data/tmp_tent/train/'
+            SAVE_PATH = './data/tmp_tent/SESSION1_ST_AUGMENT'
 
-        aug_data(orig_path, SAVE_PATH,num_aug_per_img=5)
-        app.run(main)
+            aug_data(orig_path, SAVE_PATH, num_aug_per_img=5)
+            FLAGS.dataset_path = SAVE_PATH
+
+            app.run(main)
+
+
+        elif FLAGS.stage==2:
+            TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
+            aug_data_sess1('./data/tmp_tent/test/SESSION1_LT', 0, TRAIN_SAVE_PATH)  # augmentation
+            FLAGS.dataset_path = TRAIN_SAVE_PATH
+            app.run(main)
+
+
     except SystemExit:
         pass

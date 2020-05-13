@@ -217,11 +217,11 @@ def aug_data(orig_path,SAVE_PATH,num_aug_per_img=5):
             if i > num_aug_per_img:
                 break
 
-def aug_data_sess1(orig_path,k,SAVE_PATH): # use k images from testing dataset as gallery and train the model into a classfication model for this ten IDs
+def aug_data_sess1(orig_path,SAVE_PATH,k=1): # use k images from testing dataset as gallery and train the model into a classfication model for this ten IDs
     subfolders = [f.path for f in os.scandir(orig_path) if f.is_dir()]
     Filelist = []
     for dirs in subfolders:
-        filename = random.choices(os.listdir(dirs), k=1)  # change dir name to whatever
+        filename = random.choices(os.listdir(dirs), k=k)  # change dir name to whatever
         print(filename)
         for file in filename:
             Filelist.append(os.path.join(dirs, file))
