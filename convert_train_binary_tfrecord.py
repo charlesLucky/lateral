@@ -58,7 +58,7 @@ def main(_):
 
     elif FLAGS.stage == '2':
         TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
-        aug_data_sess1('./data/tmp_tent/test/SESSION1_LT', 0, TRAIN_SAVE_PATH)  # augmentation
+        aug_data_sess1('./data/tmp_tent/test/SESSION1_LT', TRAIN_SAVE_PATH,k=2)  # augmentation
         dataset_path = TRAIN_SAVE_PATH
         output_path = './data/New_ROI_LT1_bin.tfrecord'
 
