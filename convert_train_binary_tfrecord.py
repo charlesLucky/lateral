@@ -46,6 +46,16 @@ def main(_):
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
 
+    def labelToDigitDict(dataset_path):
+        # below we code the label into consistent number start from 0
+        ids_list = [o for o in os.listdir(dataset_path) if os.path.isdir(os.path.join(dataset_path, o))]
+        cnt=0
+        Label_dict = {}
+        for id_str in ids_list:
+            Label_dict[id_str] = cnt
+            cnt = cnt+1
+        return Label_dict
+
     dataset_path = ''
     output_path = ''
     if FLAGS.stage == '1':
@@ -68,13 +78,7 @@ def main(_):
         print('[*] stage should be given!')
         
     
-    # below we code the label into consistent number start from 0
-    ids_list = [o for o in os.listdir(dataset_path) if os.path.isdir(os.path.join(dataset_path, o))]
-    cnt=0
-    Label_dict = {}
-    for id_str in ids_list:
-        Label_dict[id_str] = cnt
-        cnt = cnt+1
+    
 
     ####################################################################################
 

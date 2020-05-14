@@ -65,6 +65,7 @@ def main(_):
     optimizer = tf.keras.optimizers.SGD(
         learning_rate=learning_rate, momentum=0.9, nesterov=True)
     loss_fn = SoftmaxLoss()
+    # loss_fn = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 
     ckpt_path = tf.train.latest_checkpoint('./checkpoints/' + cfg['sub_name'])
     if ckpt_path is not None:
@@ -85,7 +86,8 @@ def main(_):
         while epochs <= cfg['epochs']:
             inputs, labels = next(train_dataset)
             # print("********************")
-            # print(inputs)
+            # print("********************",inputs)
+            # print("********************",labels)
             with tf.GradientTape() as tape:
                 logist = model(inputs, training=True)
                 # print(logist)

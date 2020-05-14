@@ -36,7 +36,6 @@ class ArcMarginPenaltyLogists(tf.keras.layers.Layer):
 
         cos_t = tf.matmul(normed_embds, normed_w, name='cos_t')
         sin_t = tf.sqrt(1. - cos_t ** 2, name='sin_t')
-        print("*****************",sin_t)
         cos_mt = tf.subtract(
             cos_t * self.cos_m, sin_t * self.sin_m, name='cos_mt')
 
