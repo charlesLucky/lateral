@@ -11,7 +11,7 @@ from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf,generatePer
 
 import modules.dataset as dataset
 
-flags.DEFINE_string('cfg_path', './configs/arc_vgg16.yaml', 'config file path')
+flags.DEFINE_string('cfg_path', './configs/arc_vgg19_2ed_stage.yaml', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
 flags.DEFINE_enum('mode', 'fit', ['fit', 'eager_tf'],
                   'fit: model.fit, eager_tf: custom GradientTape')
@@ -47,7 +47,7 @@ def main(_):
                          w_decay=cfg['w_decay'],
                          training=False,cfg=cfg)
 
-    ckpt_path = tf.train.latest_checkpoint('./checkpoints/' + 'arc_vgg19')
+    ckpt_path = tf.train.latest_checkpoint('./checkpoints/' + cfg['1st_sub_name'])
     if ckpt_path is not None:
         print("[*] load ckpt from {}".format(ckpt_path))
         basemodel.load_weights(ckpt_path)
@@ -55,7 +55,7 @@ def main(_):
         print("[*] training from scratch.")
         sys.exit()
 
-    model = ArcFishStackModel(basemodel=basemodel,backbone_type=cfg['backbone_type'],
+    model = ArcFishStackModel(basemodel=basemodel,
                          num_classes=cfg['num_classes'],
                          head_type=cfg['head_type'],
                          embd_shape=cfg['embd_shape'],
@@ -63,12 +63,19 @@ def main(_):
                          training=True, cfg=cfg)
     model.summary(line_length=80)
 
+
+    learning_rate = tf.constant(cfg['base_lr'])
+    optimizer = tf.keras.optimizers.SGD(
+        learning_rate=learning_rate, momentum=0.9, nesterov=True)
+    loss_fn = SoftmaxLoss()
+
     logging.info("load fish LT sessions dataset.")
     dataset_len = cfg['num_samples']
     steps_per_epoch = dataset_len // cfg['batch_size']
     train_dataset = dataset.load_tfrecord_dataset(
         './data/New_ROI_LT1_bin.tfrecord', cfg['batch_size'], cfg['binary_img'],
         is_ccrop=cfg['is_ccrop'], cfg=cfg)
+    epochs, steps = 1, 1
 
     if FLAGS.mode == 'eager_tf':
         # Eager mode is great for debugging
