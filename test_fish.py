@@ -1,35 +1,19 @@
 from absl import app, flags, logging
 from absl.flags import FLAGS
 import os
+import numpy as np
 import tensorflow as tf
-import sys
-from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 
+from modules.evaluations import reportAccu
 from modules.models import ArcFaceModel,ArcFishStackModel
-from modules.losses import SoftmaxLoss
-from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf,generatePermKey
-
-import modules.dataset as dataset
+from modules.utils import set_memory_growth, load_yaml, l2_norm
 
 flags.DEFINE_string('cfg_path', './configs/arc_vgg19_2ed_stage.yaml', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
-flags.DEFINE_enum('mode', 'fit', ['fit', 'eager_tf'],
-                  'fit: model.fit, eager_tf: custom GradientTape')
+flags.DEFINE_string('img_path', '', 'path to input image')
 
-gpus = tf.config.experimental.list_physical_devices('GPU')
-print("Num GPUs Available: ", len(gpus))
-if gpus:
-  try:
-    # Currently, memory growth needs to be the same across GPUs
-    for gpu in gpus:
-      tf.config.experimental.set_memory_growth(gpu, True)
-    logical_gpus = tf.config.experimental.list_logical_devices('GPU')
-    print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
-  except RuntimeError as e:
-    # Memory growth must be set before GPUs have been initialized
-    print(e)
 
-def main(_):
+def main(_argv):
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
 
@@ -40,20 +24,13 @@ def main(_):
 
     cfg = load_yaml(FLAGS.cfg_path)
 
+
     basemodel = ArcFaceModel(backbone_type=cfg['backbone_type'],
                          num_classes=cfg['num_classes'],
                          head_type=cfg['head_type'],
                          embd_shape=cfg['embd_shape'],
                          w_decay=cfg['w_decay'],
                          training=False,cfg=cfg)
-
-    ckpt_path = tf.train.latest_checkpoint('./checkpoints/' + cfg['1st_sub_name'])
-    if ckpt_path is not None:
-        print("[*] load ckpt from {}".format(ckpt_path))
-        basemodel.load_weights(ckpt_path)
-    else:
-        print("[*] training from scratch.")
-        sys.exit()
 
     model = ArcFishStackModel(basemodel=basemodel,
                          num_classes=cfg['num_classes'],
@@ -63,90 +40,23 @@ def main(_):
                          training=True, cfg=cfg)
     model.summary(line_length=80)
 
-
-    learning_rate = tf.constant(cfg['base_lr'])
-    optimizer = tf.keras.optimizers.SGD(
-        learning_rate=learning_rate, momentum=0.9, nesterov=True)
-    loss_fn = SoftmaxLoss()
-
-    logging.info("load fish LT sessions dataset.")
-    dataset_len = cfg['num_samples']
-    steps_per_epoch = dataset_len // cfg['batch_size']
-    train_dataset = dataset.load_tfrecord_dataset(
-        './data/New_ROI_LT1_bin.tfrecord', cfg['batch_size'], cfg['binary_img'],
-        is_ccrop=cfg['is_ccrop'], cfg=cfg)
-    epochs, steps = 1, 1
-
-    if FLAGS.mode == 'eager_tf':
-        # Eager mode is great for debugging
-        # Non eager graph mode is recommended for real training
-        summary_writer = tf.summary.create_file_writer(
-            './logs/' + cfg['sub_name'])
-
-        train_dataset = iter(train_dataset)
-
-        while epochs <= cfg['epochs']:
-            inputs, labels = next(train_dataset)
-            # print("********************")
-            # print(inputs)
-            with tf.GradientTape() as tape:
-                logist = model(inputs, training=True)
-                # print(logist)
-
-                reg_loss = tf.reduce_sum(model.losses)
-                pred_loss = loss_fn(labels, logist)
-                total_loss = pred_loss + reg_loss
-
-            grads = tape.gradient(total_loss, model.trainable_variables)
-            optimizer.apply_gradients(zip(grads, model.trainable_variables))
-
-            if steps % 5 == 0:
-                verb_str = "Epoch {}/{}: {}/{}, loss={:.2f}, lr={:.4f}"
-                print(verb_str.format(epochs, cfg['epochs'],
-                                      steps % steps_per_epoch,
-                                      steps_per_epoch,
-                                      total_loss.numpy(),
-                                      learning_rate.numpy()))
-
-                with summary_writer.as_default():
-                    tf.summary.scalar(
-                        'loss/total loss', total_loss, step=steps)
-                    tf.summary.scalar(
-                        'loss/pred loss', pred_loss, step=steps)
-                    tf.summary.scalar(
-                        'loss/reg loss', reg_loss, step=steps)
-                    tf.summary.scalar(
-                        'learning rate', optimizer.lr, step=steps)
-
-            if steps % cfg['save_steps'] == 0:
-                print('[*] save ckpt file!')
-                model.save_weights('checkpoints/{}/e_{}_b_{}.ckpt'.format(
-                    cfg['sub_name'], epochs, steps % steps_per_epoch))
-
-            steps += 1
-            epochs = steps // steps_per_epoch + 1
+    ckpt_path = tf.train.latest_checkpoint('./checkpoints/' + cfg['sub_name'])
+    if ckpt_path is not None:
+        print("[*] load ckpt from {}".format(ckpt_path))
+        model.load_weights(ckpt_path)
     else:
-        model.compile(optimizer=optimizer, loss=loss_fn)
+        print("[*] Cannot find ckpt from {}.".format(ckpt_path))
+        exit()
 
-        mc_callback = ModelCheckpoint(
-            'checkpoints/' + cfg['sub_name'] + '/e_{epoch}_b_{batch}.ckpt',
-            save_freq=cfg['save_steps'] * cfg['batch_size'], verbose=1,
-            save_weights_only=True)
-        tb_callback = TensorBoard(log_dir='logs/',
-                                  update_freq=cfg['batch_size'] * 5,
-                                  profile_batch=0)
-        tb_callback._total_batches_seen = steps
-        tb_callback._samples_seen = steps * cfg['batch_size']
-        callbacks = [mc_callback, tb_callback]
+    File_log_name = 'logs/multistage_Ids10Test_tent_vote.log'
+    scores_session1, scores_session2, scores_session3, scores_session4 = reportAccu(model,cfg=cfg)
+    printstr = f"{scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
 
-        model.fit(train_dataset,
-                  epochs=cfg['epochs'],
-                  steps_per_epoch=steps_per_epoch,
-                  callbacks=callbacks,
-                  initial_epoch=epochs - 1)
-
-    print("[*] training done!")
-
+    with open(File_log_name, encoding="utf-8", mode="a") as data:
+        data.write(printstr)
 
 if __name__ == '__main__':
-    app.run(main)
+    try:
+        app.run(main)
+    except SystemExit:
+        pass

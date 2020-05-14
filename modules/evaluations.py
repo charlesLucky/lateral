@@ -13,6 +13,9 @@ from .utils import l2_norm
 from sklearn import metrics
 from scipy.optimize import brentq
 from scipy import interpolate
+import json
+from modules.dataset import loadTestDS
+
 
 def get_val_pair(path, name):
     carray = bcolz.carray(rootdir=os.path.join(path, name), mode='r')
@@ -200,3 +203,54 @@ def perform_val(embedding_size, batch_size, model,
         embeddings, issame, nrof_folds,cfg)
 
     return accuracy.mean(), best_thresholds.mean(),auc,eer,embeddings
+
+
+
+def reportAccu(model_2ed,cfg=None):
+    # load lable dict
+    with open('data/Label_dict_2ed.json', 'r') as fp:
+        Label_dict_2ed = json.load(fp)
+
+    test_data_dir = './tmp_tent/test/SESSION1_LT'
+    scores_session1 =getAccByvote(test_data_dir,cfg=cfg,LableDict=Label_dict_2ed,model=model_2ed)
+
+    test_data_dir = './data/tmp_tent/test/SESSION2'
+    scores_session2 =getAccByvote(test_data_dir,cfg=cfg,LableDict=Label_dict_2ed,model=model_2ed)
+
+    test_data_dir = './data/tmp_tent/test/SESSION3'
+    scores_session3 = getAccByvote(test_data_dir,cfg=cfg,LableDict=Label_dict_2ed,model=model_2ed)
+
+    test_data_dir = './data/tmp_tent/test/SESSION4'
+    scores_session4 = getAccByvote(test_data_dir,cfg=cfg,LableDict=Label_dict_2ed,model=model_2ed)
+
+    return scores_session1,scores_session2,scores_session3,scores_session4
+
+
+
+def getAccByvote(test_data_dir,cfg=None,LableDict=None,model=None):
+    dataset = loadTestDS(test_data_dir,BATCH_SIZE=64,cfg=cfg,LableDict=LableDict)
+    sess1_class_num = 10
+    ds_it = iter(dataset)
+
+    result = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 0: []}
+
+    num_batch = 0
+    for batch in dataset:
+        imgs, label = next(ds_it)
+        output = model.predict(imgs)
+        output = tf.argmax(tf.transpose(output))
+        for i in range(output.shape[0]):
+            mylabel = label[i].numpy()[0][0]
+            result[mylabel].append(int(output[i]))
+
+    # print(result)
+    final = {}
+    correct = 0
+    for i in range(sess1_class_num):
+        lst = result[i]
+        modeval = [x for x in set(lst) if lst.count(x) > 1]
+        modeval = modeval[0]
+        final[i] = modeval
+        if i == modeval:
+            correct = correct + 1
+    return correct/sess1_class_num

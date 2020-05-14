@@ -300,48 +300,23 @@ def aug_data_sess(orig_path,k,SAVE_PATH):
             if i > num_aug_per_img:
                 break
 
-def reportAccu(BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES,model_2ed):
-    test_data_dir = './tmp_tent/test/SESSION1_LT'
-    testloadData = LoadFishDataUtil(test_data_dir, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES)
-    sess1_test_dataset, sess1_class_num = testloadData.loadTestFishData()
-    scores_session1 =getAccByvote(test_data_dir,sess1_class_num, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES)
 
-    test_data_dir = './tmp_tent/test/SESSION2'
-    scores_session2 =getAccByvote(test_data_dir,sess1_class_num, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES)
-
-    test_data_dir = './tmp_tent/test/SESSION3'
-    scores_session3 = getAccByvote(test_data_dir,sess1_class_num, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES)
-
-    test_data_dir = './tmp_tent/test/SESSION4'
-    scores_session4 = getAccByvote(test_data_dir,sess1_class_num, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES)
-
-    return scores_session1,scores_session2,scores_session3,scores_session4
-
-def getAccByvote(test_data_dir,sess1_class_num, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES):
-    testloadData = LoadFishDataUtil(test_data_dir, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES)
-    sess1_test_dataset, sess1_class_num = testloadData.loadTestFishDataWithname()
-    ds_it = iter(sess1_test_dataset)
-
-    result = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 0: []}
-
-    num_batch = 0
-    for batch in sess1_test_dataset:
-        imgs, label = next(ds_it)
-        output = model_2ed.predict(imgs)
-        output = tf.argmax(tf.transpose(output))
-        for i in range(output.shape[0]):
-            mylabel = label[i].numpy()[0][0]
-            result[mylabel].append(int(output[i]))
-
-    # print(result)
-    final = {}
-    correct = 0
-    for i in range(sess1_class_num):
-        lst = result[i]
-        modeval = [x for x in set(lst) if lst.count(x) > 1]
-        modeval = modeval[0]
-        final[i] = modeval
-        if i == modeval:
-            correct = correct + 1
-    return correct/sess1_class_num
+def loadTestDS(test_data_dir = './data/tmp_tent/test/SESSION1_LT',BATCH_SIZE=64,cfg=None,LableDict=None):
+    def get_label(file_path):
+      parts = tf.strings.split(file_path, '/')
+      wh = LableDict[parts[-2]]
+      return wh
+    def process_path(file_path):
+      label = get_label(file_path)
+    # load the raw data from the file as a string
+      image_encoded = tf.io.read_file(file_path)
+      img = tf.image.decode_jpeg(image_encoded, channels=3)
+      img = _transform_images(cfg=cfg)(img)
+      return img, label
+    list_ds = tf.data.Dataset.list_files(str(test_data_dir / '*/*'))
+    # print(f"we have total {self.image_count} images in this folder")
+    # Set `num_parallel_calls` so multiple images are loaded/processed in parallel.
+    labeled_ds = list_ds.map(process_path, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+    dataset =labeled_ds.batch(BATCH_SIZE)
+    return dataset
 

@@ -52,3 +52,5 @@ def l2_norm(x, axis=1):
     output = x / norm
 
     return output
+
+

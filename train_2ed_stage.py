@@ -2,10 +2,10 @@ from absl import app, flags, logging
 from absl.flags import FLAGS
 import os
 import tensorflow as tf
-
+import sys
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 
-from modules.models import ArcFaceModel
+from modules.models import ArcFaceModel,ArcFishStackModel
 from modules.losses import SoftmaxLoss
 from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf,generatePermKey
 
@@ -40,25 +40,28 @@ def main(_):
 
     cfg = load_yaml(FLAGS.cfg_path)
 
-    model = ArcFaceModel(backbone_type=cfg['backbone_type'],
+    basemodel = ArcFaceModel(backbone_type=cfg['backbone_type'],
                          num_classes=cfg['num_classes'],
                          head_type=cfg['head_type'],
                          embd_shape=cfg['embd_shape'],
                          w_decay=cfg['w_decay'],
-                         training=True,cfg=cfg)
-    model.summary(line_length=80)
+                         training=False,cfg=cfg)
 
-    if cfg['train_dataset']:
-        logging.info("load ms1m dataset.")
-        dataset_len = cfg['num_samples']
-        steps_per_epoch = dataset_len // cfg['batch_size']
-        train_dataset = dataset.load_tfrecord_dataset(
-            cfg['train_dataset'], cfg['batch_size'], cfg['binary_img'],
-            is_ccrop=cfg['is_ccrop'],cfg=cfg)
+    ckpt_path = tf.train.latest_checkpoint('./checkpoints/' + cfg['1st_sub_name'])
+    if ckpt_path is not None:
+        print("[*] load ckpt from {}".format(ckpt_path))
+        basemodel.load_weights(ckpt_path)
     else:
-        logging.info("load fake dataset.")
-        steps_per_epoch = 1
-        train_dataset = dataset.load_fake_dataset(cfg['input_size'])
+        print("[*] training from scratch.")
+        sys.exit()
+
+    model = ArcFishStackModel(basemodel=basemodel,
+                         num_classes=cfg['num_classes'],
+                         head_type=cfg['head_type'],
+                         embd_shape=cfg['embd_shape'],
+                         w_decay=cfg['w_decay'],
+                         training=True, cfg=cfg)
+    model.summary(line_length=80)
 
 
     learning_rate = tf.constant(cfg['base_lr'])
@@ -66,14 +69,14 @@ def main(_):
         learning_rate=learning_rate, momentum=0.9, nesterov=True)
     loss_fn = SoftmaxLoss()
 
-    ckpt_path = tf.train.latest_checkpoint('./checkpoints/' + cfg['1st_sub_name'])
-    if ckpt_path is not None:
-        print("[*] load ckpt from {}".format(ckpt_path))
-        model.load_weights(ckpt_path)
-        epochs, steps = get_ckpt_inf(ckpt_path, steps_per_epoch)
-    else:
-        print("[*] training from scratch.")
-        epochs, steps = 1, 1
+    logging.info("load fish LT sessions dataset.")
+    dataset_len = cfg['num_samples']
+    steps_per_epoch = dataset_len // cfg['batch_size']
+    train_dataset = dataset.load_tfrecord_dataset(
+        './data/New_ROI_LT1_bin.tfrecord', cfg['batch_size'], cfg['binary_img'],
+        is_ccrop=cfg['is_ccrop'], cfg=cfg)
+    epochs, steps = 1, 1
+
     if FLAGS.mode == 'eager_tf':
         # Eager mode is great for debugging
         # Non eager graph mode is recommended for real training
@@ -89,10 +92,8 @@ def main(_):
             with tf.GradientTape() as tape:
                 logist = model(inputs, training=True)
                 # print(logist)
-                if cfg['head_type'] == 'IoMHead':
-                    reg_loss = tf.cast(tf.reduce_sum(model.losses),tf.double)
-                else:
-                    reg_loss = tf.reduce_sum(model.losses)
+
+                reg_loss = tf.reduce_sum(model.losses)
                 pred_loss = loss_fn(labels, logist)
                 total_loss = pred_loss + reg_loss
 
