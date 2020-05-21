@@ -11,16 +11,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 '''
-from keras.utils import plot_model
-import keras
-from keras.models import Model
-from keras.layers import Input
-from keras.layers import Dense,BatchNormalization,Dropout
-from keras.layers import Flatten
-from keras.layers.convolutional import Conv2D
-from keras.layers.pooling import MaxPooling2D
-from keras.layers.merge import concatenate
-from keras import regularizers
+from tensorflow.keras.utils import plot_model
+import tensorflow.keras as keras
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Input
+from tensorflow.keras.layers import Dense,BatchNormalization,Dropout
+from tensorflow.keras.layers import Flatten
+from tensorflow.keras.layers.convolutional import Conv2D
+from tensorflow.keras.layers.pooling import MaxPooling2D
+from tensorflow.keras.layers.merge import concatenate
+from tensorflow.keras import regularizers
 
 '''
 Multi-scale Dilated Convolution module
