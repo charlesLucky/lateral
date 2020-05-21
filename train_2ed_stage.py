@@ -11,7 +11,7 @@ from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf,generatePer
 
 import modules.dataset as dataset
 
-flags.DEFINE_string('cfg_path', './configs/arc_vgg19_2ed_stage.yaml', 'config file path')
+flags.DEFINE_string('cfg_path', './configs/ResNet50_2ed_stage.yaml', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
 flags.DEFINE_enum('mode', 'fit', ['fit', 'eager_tf'],
                   'fit: model.fit, eager_tf: custom GradientTape')
