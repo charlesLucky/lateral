@@ -111,6 +111,7 @@ def main(_):
 
 if __name__ == '__main__':
     try:
-        app.run(main)
+        generateDataset(byIDorByImages=True, train_weight=0.67)  # half as train and half as test  0.67-> 20 as train 10 as test
+        # app.run(main)
     except SystemExit:
         pass
