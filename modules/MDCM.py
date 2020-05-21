@@ -17,9 +17,9 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input
 from tensorflow.keras.layers import Dense,BatchNormalization,Dropout
 from tensorflow.keras.layers import Flatten
-from tensorflow.keras.layers.convolutional import Conv2D
-from tensorflow.keras.layers.pooling import MaxPooling2D
-from tensorflow.keras.layers.merge import concatenate
+from tensorflow.keras.layers import Conv2D
+from tensorflow.keras.layers import MaxPooling2D
+from tensorflow.keras.layers import concatenate
 from tensorflow.keras import regularizers
 
 '''
