@@ -12,6 +12,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 '''
 from keras.utils import plot_model
+import keras
 from keras.models import Model
 from keras.layers import Input
 from keras.layers import Dense,BatchNormalization,Dropout
@@ -26,7 +27,7 @@ Multi-scale Dilated Convolution module
  filters, kernel_size, strides=(1, 1), padding='valid'
 '''
 
-def MDCM(input_shape=None, name="Multi-scale-Dilated"):
+def getMDCM(input_shape=None, name="Multi-scale-Dilated"):
     weight_decay = 0.005
     img_x = Input(shape=input_shape)
 
@@ -76,3 +77,12 @@ def MDCM(input_shape=None, name="Multi-scale-Dilated"):
     model = Model(inputs=img_x, outputs=output, name=name)
     print(model.summary())
     return model
+
+class MDCM(keras.layers.Layer):
+
+  def __init__(self, input_shape=(112,112,3)):
+    super(MDCM, self).__init__()
+    self.model = getMDCM(input_shape)
+
+  def call(self, inputs):
+    return self.model(inputs)
