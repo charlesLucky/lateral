@@ -30,28 +30,28 @@ def MDCM(input_shape=None, name="Multi-scale-Dilated"):
     weight_decay = 0.005
     img_x = Input(shape=input_shape)
 
-    x = Conv2D(32, (3, 3), padding='same', activation='relu', kernel_regularizer=regularizers.l2(weight_decay))(img_x)
+    x = Conv2D(16, (3, 3), padding='same', activation='relu', kernel_regularizer=regularizers.l2(weight_decay))(img_x)
 
-    x1 = Conv2D(64, (3, 3), dilation_rate=(1, 1), padding='same', activation='relu',
+    x1 = Conv2D(32, (3, 3), dilation_rate=(1, 1), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
-    x2 = Conv2D(64, (3, 3), dilation_rate=(4, 4), padding='same', activation='relu',
+    x2 = Conv2D(32, (3, 3), dilation_rate=(4, 4), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
-    x3 = Conv2D(64, (3, 3), dilation_rate=(8, 8), padding='same', activation='relu',
+    x3 = Conv2D(32, (3, 3), dilation_rate=(8, 8), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
-    x4 = Conv2D(64, (3, 3), dilation_rate=(16, 16), padding='same', activation='relu',
+    x4 = Conv2D(32, (3, 3), dilation_rate=(16, 16), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
 
     merge1 = concatenate([x1, x2, x3, x4])
 
-    x = Conv2D(128, (3, 3), padding='same', activation='relu', kernel_regularizer=regularizers.l2(weight_decay))(merge1)
+    x = Conv2D(32, (3, 3), padding='same', activation='relu', kernel_regularizer=regularizers.l2(weight_decay))(merge1)
 
-    x1 = Conv2D(256, (3, 3), dilation_rate=(1, 1), padding='same', activation='relu',
+    x1 = Conv2D(128, (3, 3), dilation_rate=(1, 1), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
-    x2 = Conv2D(256, (3, 3), dilation_rate=(4, 4), padding='same', activation='relu',
+    x2 = Conv2D(128, (3, 3), dilation_rate=(4, 4), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
-    x3 = Conv2D(256, (3, 3), dilation_rate=(8, 8), padding='same', activation='relu',
+    x3 = Conv2D(128, (3, 3), dilation_rate=(8, 8), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
-    x4 = Conv2D(256, (3, 3), dilation_rate=(16, 16), padding='same', activation='relu',
+    x4 = Conv2D(128, (3, 3), dilation_rate=(16, 16), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
 
     merge2 = concatenate([x1, x2, x3, x4])
