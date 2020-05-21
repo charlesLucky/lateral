@@ -14,7 +14,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 from keras.utils import plot_model
 from keras.models import Model
 from keras.layers import Input
-from keras.layers import Dense
+from keras.layers import Dense,BatchNormalization,Dropout
 from keras.layers import Flatten
 from keras.layers.convolutional import Conv2D
 from keras.layers.pooling import MaxPooling2D
@@ -56,11 +56,21 @@ def MDCM(input_shape=None, name="Multi-scale-Dilated"):
 
     merge2 = concatenate([x1, x2, x3, x4])
 
-    x = Conv2D(512, (3, 3), padding='same', activation='relu',
+    x = Conv2D(256, (3, 3), padding='same', activation='relu',
                kernel_regularizer=regularizers.l2(weight_decay))(merge2)
+    x = BatchNormalization()(x)
+    x = MaxPooling2D(pool_size=(2, 2))(x)
+
+    x = Conv2D(256, (3, 3), padding='same', activation='relu',
+               kernel_regularizer=regularizers.l2(weight_decay))(merge2)
+    x = BatchNormalization()(x)
+    x = MaxPooling2D(pool_size=(2, 2))(x)
 
     x = Conv2D(512, (3, 3), padding='same', strides=(2, 2), activation='relu',
                kernel_regularizer=regularizers.l2(weight_decay))(x)
+    x = BatchNormalization()(x)
+    x = MaxPooling2D(pool_size=(2, 2))(x)
+    x = Dropout(0.5)(x)
     x = Flatten()(x)
     output = Dense(512, kernel_regularizer=regularizers.l2(weight_decay), activation='sigmoid')(x)
     model = Model(inputs=img_x, outputs=output, name=name)
