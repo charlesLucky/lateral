@@ -322,7 +322,7 @@ def loadTestDS(test_data_dir = './data/tmp_tent/test/SESSION1_LT',BATCH_SIZE=64,
       img = tf.image.decode_jpeg(image_encoded, channels=3)
       img = _transform_images(cfg=cfg)(img)
       return img, label
-    list_ds = tf.data.Dataset.list_files(str(test_data_dir / '*/*'))
+    list_ds = tf.data.Dataset.list_files(str(test_data_dir + '/*/*'))
     # print(f"we have total {self.image_count} images in this folder")
     # Set `num_parallel_calls` so multiple images are loaded/processed in parallel.
     labeled_ds = list_ds.map(process_path, num_parallel_calls=tf.data.experimental.AUTOTUNE)
@@ -353,7 +353,7 @@ def loadTrainDS(train_data_dir = 'data/tmp_tent/train/',BATCH_SIZE=64,cfg=None,L
       img = tf.image.decode_jpeg(image_encoded, channels=3)
       img = _transform_images(cfg=cfg)(img)
       return img, label
-    list_ds = tf.data.Dataset.list_files(str(train_data_dir / '*/*'))
+    list_ds = tf.data.Dataset.list_files(str(train_data_dir + '*/*'))
     labeled_ds = list_ds.map(process_path, num_parallel_calls=tf.data.experimental.AUTOTUNE)
     dataset =labeled_ds.batch(BATCH_SIZE)
     return dataset
