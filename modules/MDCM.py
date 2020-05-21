@@ -64,4 +64,5 @@ def MDCM(input_shape=None, name="Multi-scale-Dilated"):
     x = Flatten()(x)
     output = Dense(512, kernel_regularizer=regularizers.l2(weight_decay), activation='sigmoid')(x)
     model = Model(inputs=img_x, outputs=output, name=name)
+    print(model.summary())
     return model
