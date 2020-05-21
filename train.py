@@ -52,9 +52,7 @@ def main(_):
         logging.info("load ms1m dataset.")
         dataset_len = cfg['num_samples']
         steps_per_epoch = dataset_len // cfg['batch_size']
-        train_dataset = dataset.load_tfrecord_dataset(
-            cfg['train_dataset'], cfg['batch_size'], cfg['binary_img'],
-            is_ccrop=cfg['is_ccrop'],cfg=cfg)
+        train_dataset = dataset.loadTrainDS(cfg=cfg)
     else:
         logging.info("load fake dataset.")
         steps_per_epoch = 1
