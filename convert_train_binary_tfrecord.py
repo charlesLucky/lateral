@@ -46,7 +46,7 @@ def make_example(img_str, source_id, filename):
 
 def main(_):
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-    os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
     def labelToDigitDict(dataset_path):
         # below we code the label into consistent number start from 0
