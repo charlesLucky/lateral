@@ -37,7 +37,7 @@ def _int64_feature(value):
 
 def make_example(img_str, source_id, filename):
     # Create a dictionary with features that may be relevant.
-    feature = {'image/source_id': _bytes_feature(source_id),
+    feature = {'image/source_id': _int64_feature(source_id),
                'image/filename': _bytes_feature(filename),
                'image/encoded': _bytes_feature(img_str)}
 
@@ -113,14 +113,13 @@ def main(_):
     with tf.io.TFRecordWriter(output_path) as writer:
         for img_path, id_name, filename in tqdm.tqdm(samples):
             tf_example = make_example(img_str=open(img_path, 'rb').read(),
-                                      # source_id=Label_dict[id_name],
-                                      source_id=id_name,
+                                      source_id=Label_dict[id_name],
                                       filename=str.encode(filename))
             writer.write(tf_example.SerializeToString())
     with tf.io.TFRecordWriter('./data/New_ROI_STLT_bin_val.tfrecord') as writer:
         for img_path, id_name, filename in tqdm.tqdm(val_samples):
             tf_example = make_example(img_str=open(img_path, 'rb').read(),
-                                      source_id=id_name,
+                                      source_id=Label_dict[id_name],
                                       filename=str.encode(filename))
             writer.write(tf_example.SerializeToString())
 
