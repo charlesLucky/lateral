@@ -107,7 +107,7 @@ def reportAccu(model_2ed,cfg=None):
     with open('data/Label_dict_2ed.json', 'r') as fp:
         Label_dict_2ed = json.load(fp)
 
-    test_data_dir = './tmp_tent/test/SESSION1_LT'
+    test_data_dir = './data/tmp_tent/test/SESSION1_LT'
     scores_session1 =getAccByvote(test_data_dir,cfg=cfg,LableDict=Label_dict_2ed,model=model_2ed)
 
     test_data_dir = './data/tmp_tent/test/SESSION2'
