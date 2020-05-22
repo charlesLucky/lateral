@@ -61,13 +61,13 @@ def main(_):
     dataset_path = ''
     output_path = ''
     if FLAGS.stage == '1':
-        generateDataset(byIDorByImages=True,
-                        train_weight=0.67)  # half as train and half as test  0.67-> 20 as train 10 as test
+        # generateDataset(byIDorByImages=True,
+        #                 train_weight=0.67)  # half as train and half as test  0.67-> 20 as train 10 as test
 
         orig_path = './data/tmp_tent/train/'
         SAVE_PATH = './data/tmp_tent/SESSION1_ST_AUGMENT'
 
-        aug_data(orig_path, SAVE_PATH, num_aug_per_img=5)
+        # aug_data(orig_path, SAVE_PATH, num_aug_per_img=5)
         dataset_path = SAVE_PATH
         output_path = './data/New_ROI_STLT_bin.tfrecord'
         Label_dict = labelToDigitDict(dataset_path)
@@ -93,17 +93,31 @@ def main(_):
         logging.info('Loading {}'.format(dataset_path))
 
     samples = []
+    val_samples = []
     logging.info('Reading data list...')
     for id_name in tqdm.tqdm(os.listdir(dataset_path)):
         img_paths = glob.glob(os.path.join(dataset_path, id_name, '*.png'))
+        cnt=0
         for img_path in img_paths:
             filename = os.path.join(id_name, os.path.basename(img_path))
-            samples.append((img_path, id_name, filename))
+            if cnt <=2:
+                val_samples.append((img_path, id_name, filename))
+            else:
+                samples.append((img_path, id_name, filename))
+            cnt = cnt +1
+
     random.shuffle(samples)
+    random.shuffle(val_samples)
 
     logging.info('Writing tfrecord file...')
     with tf.io.TFRecordWriter(output_path) as writer:
         for img_path, id_name, filename in tqdm.tqdm(samples):
+            tf_example = make_example(img_str=open(img_path, 'rb').read(),
+                                      source_id=Label_dict[id_name],
+                                      filename=str.encode(filename))
+            writer.write(tf_example.SerializeToString())
+    with tf.io.TFRecordWriter('./data/New_ROI_STLT_bin_val.tfrecord') as writer:
+        for img_path, id_name, filename in tqdm.tqdm(val_samples):
             tf_example = make_example(img_str=open(img_path, 'rb').read(),
                                       source_id=Label_dict[id_name],
                                       filename=str.encode(filename))
