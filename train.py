@@ -142,9 +142,9 @@ def main(_):
 
         model.fit(train_dataset,
                   epochs=cfg['epochs'],
+                  validation_data = val_dataset,
                   steps_per_epoch=steps_per_epoch,
                   callbacks=callbacks,
-                  validation_split=0.2,
                   initial_epoch=epochs - 1)
 
     print("[*] training done!")
