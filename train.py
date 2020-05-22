@@ -55,6 +55,8 @@ def main(_):
         train_dataset = dataset.load_tfrecord_dataset(
             cfg['train_dataset'], cfg['batch_size'], cfg['binary_img'],
             is_ccrop=cfg['is_ccrop'],cfg=cfg)
+        val_dataset = dataset.load_tfrecord_dataset('./data/New_ROI_STLT_bin_val.tfrecord', cfg['batch_size'], cfg['binary_img'],
+            is_ccrop=cfg['is_ccrop'], cfg=cfg)
     else:
         logging.info("load fake dataset.")
         steps_per_epoch = 1
@@ -142,6 +144,7 @@ def main(_):
                   epochs=cfg['epochs'],
                   steps_per_epoch=steps_per_epoch,
                   callbacks=callbacks,
+                  validation_split=0.2,
                   initial_epoch=epochs - 1)
 
     print("[*] training done!")
