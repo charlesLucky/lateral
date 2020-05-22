@@ -61,19 +61,19 @@ def main(_):
     dataset_path = ''
     output_path = ''
     if FLAGS.stage == '1':
-        generateDataset(byIDorByImages=True,
-                        train_weight=0.67)  # half as train and half as test  0.67-> 20 as train 10 as test
+        # generateDataset(byIDorByImages=True,
+        #                 train_weight=0.67)  # half as train and half as test  0.67-> 20 as train 10 as test
 
         orig_path = './data/tmp_tent/train/'
         SAVE_PATH = './data/tmp_tent/SESSION1_ST_AUGMENT'
 
-        aug_data(orig_path, SAVE_PATH, num_aug_per_img=5)
+        # aug_data(orig_path, SAVE_PATH, num_aug_per_img=5)
         dataset_path = SAVE_PATH
         output_path = './data/New_ROI_STLT_bin.tfrecord'
         Label_dict = labelToDigitDict(dataset_path)
     elif FLAGS.stage == '2':
         TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
-        aug_data_sess1('./data/tmp_tent/test/SESSION1_LT', TRAIN_SAVE_PATH,k=2)  # augmentation
+        # aug_data_sess1('./data/tmp_tent/test/SESSION1_LT', TRAIN_SAVE_PATH,k=2)  # augmentation
         dataset_path = TRAIN_SAVE_PATH
         output_path = './data/New_ROI_LT1_bin.tfrecord'
         Label_dict = labelToDigitDict(dataset_path)
@@ -105,7 +105,8 @@ def main(_):
     with tf.io.TFRecordWriter(output_path) as writer:
         for img_path, id_name, filename in tqdm.tqdm(samples):
             tf_example = make_example(img_str=open(img_path, 'rb').read(),
-                                      source_id=Label_dict[id_name],
+                                      # source_id=Label_dict[id_name],
+                                      source_id=id_name,
                                       filename=str.encode(filename))
             writer.write(tf_example.SerializeToString())
 
