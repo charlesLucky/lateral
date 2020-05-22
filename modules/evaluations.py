@@ -135,9 +135,10 @@ def getAccByvote(test_data_dir,cfg=None,LableDict=None,model=None):
         imgs, label = next(ds_it)
         output = model.predict(imgs)
         output = tf.argmax(tf.transpose(output))
-        for i in range(output.shape[0]):
-            mylabel = label[i].numpy()[0][0]
-            result[mylabel].append(int(output[i]))
+        print(output)
+        # for i in range(output.shape[0]):
+        #     mylabel = label[i].numpy()[0][0]
+        #     result[mylabel].append(int(output[i]))
 
     # print(result)
     final = {}
