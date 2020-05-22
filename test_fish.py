@@ -8,7 +8,7 @@ from modules.evaluations import reportAccu
 from modules.models import ArcFaceModel,ArcFishStackModel
 from modules.utils import set_memory_growth, load_yaml, l2_norm
 
-flags.DEFINE_string('cfg_path', './configs/arc_vgg19_2ed_stage.yaml', 'config file path')
+flags.DEFINE_string('cfg_path', './configs/MDCM_2ed_stage.yaml', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
 flags.DEFINE_string('img_path', '', 'path to input image')
 
