@@ -8,6 +8,7 @@ from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 from modules.models import ArcFaceModel,ArcFishStackModel
 from modules.losses import SoftmaxLoss
 from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf,generatePermKey
+from modules.LoadFishDataUtil import LoadFishDataUtil
 
 import modules.dataset as dataset
 
@@ -55,8 +56,21 @@ def main(_):
         print("[*] training from scratch.")
         sys.exit()
 
+
+    logging.info("load fish LT sessions dataset.")
+    dataset_len = cfg['num_samples']
+    steps_per_epoch = dataset_len // cfg['batch_size']
+    CLASS_NAMES = None
+    SPLIT_WEIGHTS = (0.9, 0.1, 0.0)  # train cv val vs test
+    myloadData = LoadFishDataUtil('./data/tmp_tent/test/SESSION_LT_AUGMENT', cfg['batch_size'], cfg['input_size_w'], cfg['input_size_h'],
+                                  CLASS_NAMES, SPLIT_WEIGHTS)
+    train_dataset, val_dataset, test_dataset, STEPS_PER_EPOCH, CLASS_NAMES, class_num = myloadData.loadFishData()
+    print(f'total class:{class_num}')
+
+    epochs, steps = 1, 1
+
     model = ArcFishStackModel(basemodel=basemodel,
-                         num_classes=cfg['num_classes'],
+                         num_classes=class_num,
                          head_type=cfg['head_type'],
                          embd_shape=cfg['embd_shape'],
                          w_decay=cfg['w_decay'],
@@ -67,22 +81,15 @@ def main(_):
     learning_rate = tf.constant(cfg['base_lr'])
     optimizer = tf.keras.optimizers.SGD(
         learning_rate=learning_rate, momentum=0.9, nesterov=True)
-    loss_fn = SoftmaxLoss()
+    # loss_fn = SoftmaxLoss()
+    loss_fn = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 
-    logging.info("load fish LT sessions dataset.")
-    dataset_len = cfg['num_samples']
-    steps_per_epoch = dataset_len // cfg['batch_size']
-    train_dataset = dataset.load_tfrecord_dataset(
-        './data/New_ROI_LT1_bin.tfrecord', cfg['batch_size'], cfg['binary_img'],
-        is_ccrop=cfg['is_ccrop'], cfg=cfg)
-    epochs, steps = 1, 1
-
-    model.compile(optimizer=optimizer, loss=loss_fn)
+    model.compile(optimizer=optimizer, loss=loss_fn,metrics=['accuracy'])
 
     mc_callback = ModelCheckpoint(
         'checkpoints/' + cfg['sub_name'] + '/e_{epoch}_b_{batch}.ckpt',
-        save_freq=cfg['save_steps'] * cfg['batch_size'], verbose=1,
-        save_weights_only=True)
+        save_freq=cfg['save_steps'] * cfg['batch_size'], monitor='accuracy', verbose=1, save_best_only=True, mode='max')
+
     tb_callback = TensorBoard(log_dir='logs/',
                               update_freq=cfg['batch_size'] * 5,
                               profile_batch=0)
@@ -92,11 +99,11 @@ def main(_):
 
     model.fit(train_dataset,
               epochs=cfg['epochs'],
-              steps_per_epoch=steps_per_epoch,
+              # validation_data=val_dataset,
+              # validation_steps=20,
+              # steps_per_epoch=steps_per_epoch,
               callbacks=callbacks,
               initial_epoch=epochs - 1)
-
-
     print("[*] training done!")
 
 

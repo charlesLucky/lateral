@@ -15,6 +15,7 @@ from scipy.optimize import brentq
 from scipy import interpolate
 import json
 from modules.dataset import loadTestDS
+from modules.LoadFishDataUtil import LoadFishDataUtil
 
 
 def get_val_pair(path, name):
@@ -52,7 +53,7 @@ def calculate_accuracy(threshold, dist, actual_issame):
 
 
 def calculate_roc(thresholds, embeddings1, embeddings2, actual_issame,
-                  nrof_folds=10,cfg=None):
+                  nrof_folds=10, cfg=None):
     assert (embeddings1.shape[0] == embeddings2.shape[0])
     assert (embeddings1.shape[1] == embeddings2.shape[1])
     nrof_pairs = min(len(actual_issame), embeddings1.shape[0])
@@ -69,7 +70,7 @@ def calculate_roc(thresholds, embeddings1, embeddings2, actual_issame,
     dist = np.sum(np.square(diff), 1)
     if cfg['head_type'] == 'IoMHead':
         # dist = dist/(cfg['q']*cfg['embd_shape']) # should divide by the largest distance
-        dist = dist / (tf.math.reduce_max(dist).numpy()+10)  # should divide by the largest distance
+        dist = dist / (tf.math.reduce_max(dist).numpy() + 10)  # should divide by the largest distance
     print("[*] dist {}".format(dist))
     for fold_idx, (train_set, test_set) in enumerate(k_fold.split(indices)):
         # Find the best threshold for the fold
@@ -98,8 +99,10 @@ def calculate_roc(thresholds, embeddings1, embeddings2, actual_issame,
     eer = brentq(lambda x: 1. - x - interpolate.interp1d(fpr, tpr)(x), 0., 1.)
     # print('Equal Error Rate (EER): %1.3f' % eer)
 
-    return tpr, fpr, accuracy, best_thresholds,auc,eer
+    return tpr, fpr, accuracy, best_thresholds, auc, eer
 
+
+'''
 
 
 def reportAccu(model_2ed,cfg=None):
@@ -124,9 +127,12 @@ def reportAccu(model_2ed,cfg=None):
 
 
 def getAccByvote(test_data_dir,cfg=None,LableDict=None,model=None):
+    testloadData = LoadFishDataUtil(test_data_dir, BATCH_SIZE=32, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES)
+    sess1_test_dataset, sess1_class_num = testloadData.loadTestFishData()
+
     dataset = loadTestDS(test_data_dir,BATCH_SIZE=64,cfg=cfg,LableDict=LableDict)
     sess1_class_num = 10
-    ds_it = iter(dataset)
+    ds_it = iter(sess1_test_dataset)
 
     result = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 0: []}
 
@@ -153,3 +159,57 @@ def getAccByvote(test_data_dir,cfg=None,LableDict=None,model=None):
         if i == modeval:
             correct = correct + 1
     return correct/sess1_class_num
+
+'''
+
+
+def reportAccu(BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES, model_2ed):
+    test_data_dir = './data/tmp_tent/test/SESSION1_LT'
+    testloadData = LoadFishDataUtil(test_data_dir, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES)
+    sess1_test_dataset, sess1_class_num = testloadData.loadTestFishData()
+
+    scores_session1 = getAccByvote(model_2ed, test_data_dir, sess1_class_num, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT,
+                                   CLASS_NAMES)
+
+    test_data_dir = './data/tmp_tent/test/SESSION2'
+    scores_session2 = getAccByvote(model_2ed, test_data_dir, sess1_class_num, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT,
+                                   CLASS_NAMES)
+
+    test_data_dir = './data/tmp_tent/test/SESSION3'
+    scores_session3 = getAccByvote(model_2ed, test_data_dir, sess1_class_num, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT,
+                                   CLASS_NAMES)
+
+    test_data_dir = './data/tmp_tent/test/SESSION4'
+    scores_session4 = getAccByvote(model_2ed, test_data_dir, sess1_class_num, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT,
+                                   CLASS_NAMES)
+
+    return scores_session1, scores_session2, scores_session3, scores_session4
+
+
+def getAccByvote(model_2ed, test_data_dir, sess1_class_num, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES):
+    testloadData = LoadFishDataUtil(test_data_dir, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES)
+    sess1_test_dataset, sess1_class_num = testloadData.loadTestFishDataWithname()
+    ds_it = iter(sess1_test_dataset)
+
+    result = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 0: []}
+
+    num_batch = 0
+    for batch in sess1_test_dataset:
+        imgs, label = next(ds_it)
+        output = model_2ed.predict(imgs)
+        output = tf.argmax(tf.transpose(output))
+        for i in range(output.shape[0]):
+            mylabel = label[i].numpy()[0][0]
+            result[mylabel].append(int(output[i]))
+
+    # print(result)
+    final = {}
+    correct = 0
+    for i in range(sess1_class_num):
+        lst = result[i]
+        modeval = [x for x in set(lst) if lst.count(x) > 1]
+        modeval = modeval[0]
+        final[i] = modeval
+        if i == modeval:
+            correct = correct + 1
+    return correct / sess1_class_num

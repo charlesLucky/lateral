@@ -7,6 +7,7 @@ import tensorflow as tf
 from modules.evaluations import reportAccu
 from modules.models import ArcFaceModel,ArcFishStackModel
 from modules.utils import set_memory_growth, load_yaml, l2_norm
+from modules.LoadFishDataUtil import LoadFishDataUtil
 
 flags.DEFINE_string('cfg_path', './configs/MDCM_2ed_stage.yaml', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
@@ -33,7 +34,7 @@ def main(_argv):
                          training=False,cfg=cfg)
 
     model = ArcFishStackModel(basemodel=basemodel,
-                         num_classes=cfg['num_classes'],
+                         num_classes=10,
                          head_type=cfg['head_type'],
                          embd_shape=cfg['embd_shape'],
                          w_decay=cfg['w_decay'],
@@ -49,7 +50,17 @@ def main(_argv):
         exit()
 
     File_log_name = 'logs/multistage_Ids10Test_tent_vote.log'
-    scores_session1, scores_session2, scores_session3, scores_session4 = reportAccu(model,cfg=cfg)
+
+    CLASS_NAMES = None
+    SPLIT_WEIGHTS = (0.9, 0.1, 0.0)  # train cv val vs test
+    myloadData = LoadFishDataUtil('./data/tmp_tent/test/SESSION_LT_AUGMENT', cfg['batch_size'], cfg['input_size_w'],
+                                  cfg['input_size_h'],
+                                  CLASS_NAMES, SPLIT_WEIGHTS)
+    train_dataset, val_dataset, test_dataset, STEPS_PER_EPOCH, CLASS_NAMES, class_num = myloadData.loadFishData()
+    print(f'total class:{class_num}')
+
+    scores_session1, scores_session2, scores_session3, scores_session4 =  reportAccu( cfg['batch_size'], cfg['input_size_w'],
+                                  cfg['input_size_h'], CLASS_NAMES, model)
     printstr = f"{scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
 
     with open(File_log_name, encoding="utf-8", mode="a") as data:

@@ -62,7 +62,7 @@ def main(_):
 
         CLASS_NAMES = None
         SPLIT_WEIGHTS = (0.9, 0.1, 0.0)  # train cv val vs test
-        myloadData = LoadFishDataUtil( './data/tmp_tent/SESSION1_ST_AUGMENT', 32, cfg['input_size_w'], cfg['input_size_h'], CLASS_NAMES, SPLIT_WEIGHTS)
+        myloadData = LoadFishDataUtil( './data/tmp_tent/SESSION1_ST_AUGMENT', cfg['batch_size'], cfg['input_size_w'], cfg['input_size_h'], CLASS_NAMES, SPLIT_WEIGHTS)
         train_dataset, val_dataset, test_dataset, STEPS_PER_EPOCH, CLASS_NAMES, class_num = myloadData.loadFishData()
         print(f'total class:{class_num}')
 
