@@ -111,8 +111,8 @@ def FishModel(channels=3, num_classes=None, name='arcface_model',
                  w_decay=5e-4, use_pretrain=True, training=False,cfg=None):
     """Arc Face Model"""
     x = inputs = Input([cfg['input_size_w'], cfg['input_size_h'], channels], name='input_image')
-    x = OutputLayer(embd_shape, w_decay=w_decay)(x)
-    embds = Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain)(x)
+    x = Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain)(x)
+    embds = OutputLayer(embd_shape, w_decay=w_decay)(x)
     logist = NormHead(num_classes=num_classes, w_decay=w_decay)(embds)
     return Model(inputs, logist, name=name)
 
