@@ -70,6 +70,12 @@ class LoadFishDataUtil():
         img = self.decode_img(img)
         return img, label
 
+    def process_path_withname(self, file_path):
+        label = self.get_label_withname(file_path)
+        # load the raw data from the file as a string
+        img = tf.io.read_file(file_path)
+        img = self.decode_img(img)
+        return img, label
     # def process_path_withname(self, file_path):
     #     label = self.get_label_withname(file_path)
     #     # load the raw data from the file as a string
