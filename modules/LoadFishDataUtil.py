@@ -70,20 +70,6 @@ class LoadFishDataUtil():
         img = self.decode_img(img)
         return img, label
 
-    def process_path_resnet(self, file_path):
-        label = self.get_label(file_path)
-        # load the raw data from the file as a string
-        img = tf.io.read_file(file_path)
-        # convert the compressed string to a 3D uint8 tensor
-        img = tf.image.decode_jpeg(img, channels=3)
-        # Use `convert_image_dtype` to convert to floats in the [0,1] range.
-        # img = tf.image.convert_image_dtype(img, tf.float32)
-        # img = (img/127.5) - 1
-        # resize the image to the desired size.
-        img = tf.image.resize(img, [self.IMG_WIDTH, self.IMG_HEIGHT])
-        img = preprocess_input(img)
-        return img, label
-
     def process_path_withname(self, file_path):
         label = self.get_label_withname(file_path)
         # load the raw data from the file as a string
