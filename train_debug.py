@@ -87,11 +87,10 @@ def main(_):
         epochs, steps = 1, 1
 
     model.compile(optimizer=optimizer, loss=loss_fn,metrics=['accuracy'])
-
     mc_callback = ModelCheckpoint(
         'checkpoints/' + cfg['sub_name'] + '/e_{epoch}_b_{batch}.ckpt',
-        save_freq=cfg['save_steps'] * cfg['batch_size'], verbose=1,
-        save_weights_only=True)
+        save_freq=cfg['save_steps'] * cfg['batch_size'], monitor='accuracy', verbose=1, save_best_only=True, mode='max')
+
     tb_callback = TensorBoard(log_dir='logs/',
                               update_freq=cfg['batch_size'] * 5,
                               profile_batch=0)
