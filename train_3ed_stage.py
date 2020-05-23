@@ -50,39 +50,39 @@ def main(_):
                          w_decay=cfg['w_decay'],
                          training=False,cfg=cfg)
 
-    ckpt_path = tf.train.latest_checkpoint('./checkpoints/' + cfg['1st_sub_name'])
-    if ckpt_path is not None:
-        print("[*] load ckpt from {}".format(ckpt_path))
-        basemodel.load_weights(ckpt_path)
-    else:
-        print("[*] training from scratch.")
-
-
-    logging.info("load fish LT sessions dataset.")
-    dataset_len = cfg['num_samples']
-    steps_per_epoch = dataset_len // cfg['batch_size']
-    CLASS_NAMES = None
-    SPLIT_WEIGHTS = (0.9, 0.1, 0.0)  # train cv val vs test
-    myloadData = LoadFishDataUtil('./data/tmp_tent/test/SESSION_LT_AUGMENT', cfg['batch_size'], cfg['input_size_w'], cfg['input_size_h'],
-                                  CLASS_NAMES, SPLIT_WEIGHTS)
-    train_dataset, val_dataset, test_dataset, STEPS_PER_EPOCH, CLASS_NAMES, class_num = myloadData.loadFishData()
-    print(f'total class:{class_num}')
-
-    epochs, steps = 1, 1
-
     model = ArcFishStackModel(basemodel=basemodel,
-                         num_classes=class_num,
+                         num_classes=10,
                          head_type=cfg['head_type'],
                          embd_shape=cfg['embd_shape'],
                          w_decay=cfg['w_decay'],
                          training=True, cfg=cfg)
     model.summary(line_length=80)
 
+    ckpt_path = tf.train.latest_checkpoint('./checkpoints/' + cfg['sub_name'])
+    if ckpt_path is not None:
+        print("[*] load ckpt from {}".format(ckpt_path))
+        model.load_weights(ckpt_path)
+    else:
+        print("[*] Cannot find ckpt from {}.".format(ckpt_path))
+        exit()
+
+    TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
+    aug_data_sess('./tmp_tent/test/SESSION2', TRAIN_SAVE_PATH, k=2)
+
+    logging.info("load fish LT sessions dataset.")
+    CLASS_NAMES = None
+    SPLIT_WEIGHTS = (0.9, 0.1, 0.0)  # train cv val vs test
+    myloadData = LoadFishDataUtil('./data/tmp_tent/test/SESSION_LT_AUGMENT', cfg['batch_size'], cfg['input_size_w'],
+                                  cfg['input_size_h'],
+                                  CLASS_NAMES, SPLIT_WEIGHTS)
+    train_dataset, val_dataset, test_dataset, STEPS_PER_EPOCH, CLASS_NAMES, class_num = myloadData.loadFishData()
+    print(f'total class:{class_num}')
+
+    epochs, steps = 1, 1
 
     learning_rate = tf.constant(cfg['base_lr'])
     optimizer = tf.keras.optimizers.SGD(
         learning_rate=learning_rate, momentum=0.9, nesterov=True)
-    # loss_fn = SoftmaxLoss()
     loss_fn = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 
     model.compile(optimizer=optimizer, loss=loss_fn,metrics=['accuracy'])
@@ -111,11 +111,10 @@ def main(_):
     File_log_name = 'logs/multistage_Ids10Test_tent_vote.log'
     scores_session1, scores_session2, scores_session3, scores_session4 =  reportAccu( cfg['batch_size'], cfg['input_size_w'],
                                   cfg['input_size_h'], CLASS_NAMES, model)
-    printstr = f"2ed: {scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
+    printstr = f"3ed: {scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
     print(printstr)
     with open(File_log_name, encoding="utf-8", mode="a") as data:
         data.write(printstr)
-
 
 if __name__ == '__main__':
     app.run(main)
