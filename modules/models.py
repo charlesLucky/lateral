@@ -118,13 +118,8 @@ def ArcFishStackModel(basemodel = None,channels=3, num_classes=None, name='arcfa
     x = inputs = Input([cfg['input_size_w'], cfg['input_size_h'], channels], name='input_image')
     embds = basemodel(x)
     assert num_classes is not None
-    labels = Input([], name='label')
-    if head_type == 'ArcHead':
-        logist = ArcHead(num_classes=num_classes, margin=margin,
-                         logist_scale=logist_scale)(embds, labels)
-    else:
-        logist = NormHead(num_classes=num_classes, w_decay=w_decay)(embds)
-    return Model((inputs, labels), logist, name=name)
+    logist = NormHead(num_classes=num_classes, w_decay=w_decay)(embds)
+    return Model(inputs, logist, name=name)
 
 
 
