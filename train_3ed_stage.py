@@ -66,8 +66,8 @@ def main(_):
         print("[*] Cannot find ckpt from {}.".format(ckpt_path))
         exit()
 
-    TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
-    aug_data_sess('./data/tmp_tent/test/SESSION2', TRAIN_SAVE_PATH, k=2)
+    # TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
+    # aug_data_sess('./data/tmp_tent/test/SESSION2', TRAIN_SAVE_PATH, k=2)
 
     logging.info("load fish LT sessions dataset.")
     CLASS_NAMES = None
