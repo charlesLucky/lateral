@@ -10,6 +10,7 @@ from modules.losses import SoftmaxLoss
 from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf,generatePermKey
 
 import modules.dataset as dataset
+from modules.dataset import generateDataset, aug_data,aug_data_sess1
 
 from modules.LoadFishDataUtil import LoadFishDataUtil
 
@@ -54,11 +55,12 @@ def main(_):
         logging.info("load ms1m dataset.")
         dataset_len = cfg['num_samples']
         steps_per_epoch = dataset_len // cfg['batch_size']
-        # train_dataset = dataset.load_tfrecord_dataset(
-        #     cfg['train_dataset'], cfg['batch_size'], cfg['binary_img'],
-        #     is_ccrop=cfg['is_ccrop'],cfg=cfg)
-        # val_dataset = dataset.load_tfrecord_dataset('./data/New_ROI_STLT_bin_val.tfrecord', cfg['batch_size'], cfg['binary_img'],
-        #     is_ccrop=cfg['is_ccrop'], cfg=cfg)
+        ##
+        generateDataset(byIDorByImages=True,
+                        train_weight=0.67)  # half as train and half as test  0.67-> 20 as train 10 as test
+        orig_path = './data/tmp_tent/train/'
+        SAVE_PATH = './data/tmp_tent/SESSION1_ST_AUGMENT'
+        aug_data(orig_path, SAVE_PATH, num_aug_per_img=5)
 
         CLASS_NAMES = None
         SPLIT_WEIGHTS = (0.9, 0.1, 0.0)  # train cv val vs test
