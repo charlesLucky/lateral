@@ -94,6 +94,7 @@ def main(_):
     model.fit(train_dataset,
               epochs=cfg['epochs'],
               callbacks=callbacks,
+              steps_per_epoch=10000,
               initial_epoch=epochs - 1)
     print("[*] training done!")
 
