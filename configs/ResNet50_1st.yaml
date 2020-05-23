@@ -7,7 +7,7 @@ input_size_h: 75
 embd_shape: 512
 sub_name: 'arc_ResNet50'
 backbone_type: 'ResNet50' # 'ResNet50', 'MobileNetV2' VGG16
-head_type: ArcHead # 'ArcHead', 'NormHead'
+head_type: NormHead # 'ArcHead', 'NormHead'
 is_ccrop: True # central-cropping or not
 
 # train
