@@ -54,7 +54,6 @@ def main(_):
         basemodel.load_weights(ckpt_path)
     else:
         print("[*] training from scratch.")
-        sys.exit()
 
 
     logging.info("load fish LT sessions dataset.")
