@@ -5,7 +5,7 @@ import tensorflow as tf
 
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 
-from modules.models import ArcFaceModel
+from modules.models import ArcFaceModel,FishModel
 from modules.losses import SoftmaxLoss
 from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf,generatePermKey
 
@@ -42,7 +42,7 @@ def main(_):
 
     cfg = load_yaml(FLAGS.cfg_path)
 
-    model = ArcFaceModel(backbone_type=cfg['backbone_type'],
+    model = FishModel(backbone_type=cfg['backbone_type'],
                          num_classes=cfg['num_classes'],
                          head_type=cfg['head_type'],
                          embd_shape=cfg['embd_shape'],

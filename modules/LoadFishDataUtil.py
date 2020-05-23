@@ -70,12 +70,12 @@ class LoadFishDataUtil():
         img = self.decode_img(img)
         return img, label
 
-    def process_path_withname(self, file_path):
-        label = self.get_label_withname(file_path)
-        # load the raw data from the file as a string
-        img = tf.io.read_file(file_path)
-        img = self.decode_img(img)
-        return (img, label),label
+    # def process_path_withname(self, file_path):
+    #     label = self.get_label_withname(file_path)
+    #     # load the raw data from the file as a string
+    #     img = tf.io.read_file(file_path)
+    #     img = self.decode_img(img)
+    #     return (img, label),label
 
     def prepare_for_training(self, ds, cache=True, shuffle_buffer_size=1000):
         # This is a small dataset, only load it once, and keep it in memory.
