@@ -103,7 +103,7 @@ def main(_):
     callbacks = [mc_callback, tb_callback,es]
 
     model.fit(train_dataset,
-              epochs=cfg['epochs'],
+              epochs=1,
               callbacks=callbacks,
               initial_epoch=epochs - 1)
     print("[*] training done!")
