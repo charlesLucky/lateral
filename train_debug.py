@@ -42,7 +42,7 @@ def main(_):
 
     cfg = load_yaml(FLAGS.cfg_path)
 
-    model = FishModel(backbone_type=cfg['backbone_type'],
+    model = ArcFaceModel(backbone_type=cfg['backbone_type'],
                          num_classes=cfg['num_classes'],
                          head_type=cfg['head_type'],
                          embd_shape=cfg['embd_shape'],
