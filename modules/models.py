@@ -91,16 +91,10 @@ def ArcFaceModel(channels=3, num_classes=None, name='arcface_model',
     x = Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain)(x)
 
     embds = OutputLayer(embd_shape, w_decay=w_decay)(x)
-
     if training:
         assert num_classes is not None
-        labels = Input([], name='label')
-        if head_type == 'ArcHead':
-            logist = ArcHead(num_classes=num_classes, margin=margin,
-                             logist_scale=logist_scale)(embds, labels)
-        else:
-            logist = NormHead(num_classes=num_classes, w_decay=w_decay)(embds)
-        return Model((inputs, labels), logist, name=name)
+        logist = NormHead(num_classes=num_classes, w_decay=w_decay)(embds)
+        return Model(inputs, logist, name=name)
     else:
         return Model(inputs, embds, name=name)
 
