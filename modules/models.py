@@ -105,6 +105,17 @@ def ArcFaceModel(channels=3, num_classes=None, name='arcface_model',
         return Model(inputs, embds, name=name)
 
 
+def FishModel(channels=3, num_classes=None, name='arcface_model',
+                 margin=0.5, logist_scale=64, embd_shape=512,
+                 head_type='ArcHead', backbone_type='ResNet50',
+                 w_decay=5e-4, use_pretrain=True, training=False,cfg=None):
+    """Arc Face Model"""
+    x = inputs = Input([cfg['input_size_w'], cfg['input_size_h'], channels], name='input_image')
+
+    embds = Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain)(x)
+    logist = NormHead(num_classes=num_classes, w_decay=w_decay)(embds)
+    return Model(inputs, embds, name=name)
+
 def ArcFishStackModel(basemodel = None,channels=3, num_classes=None, name='arcface_model',
                  margin=0.5, logist_scale=64, embd_shape=512,
                  head_type='ArcHead',
