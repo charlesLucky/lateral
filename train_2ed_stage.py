@@ -3,12 +3,14 @@ from absl.flags import FLAGS
 import os
 import tensorflow as tf
 import sys
-from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
+from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard,EarlyStopping
 
 from modules.models import ArcFaceModel,ArcFishStackModel
 from modules.losses import SoftmaxLoss
 from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf,generatePermKey
 from modules.LoadFishDataUtil import LoadFishDataUtil
+from modules.evaluations import reportAccu
+from modules.dataset import aug_data_sess
 
 import modules.dataset as dataset
 
@@ -95,16 +97,27 @@ def main(_):
                               profile_batch=0)
     tb_callback._total_batches_seen = steps
     tb_callback._samples_seen = steps * cfg['batch_size']
-    callbacks = [mc_callback, tb_callback]
+
+    es = EarlyStopping(monitor='accuracy', mode='min', verbose=1, patience=5)
+
+    callbacks = [mc_callback, tb_callback,es]
 
     model.fit(train_dataset,
               epochs=cfg['epochs'],
-              # validation_data=val_dataset,
-              # validation_steps=20,
-              # steps_per_epoch=steps_per_epoch,
               callbacks=callbacks,
               initial_epoch=epochs - 1)
     print("[*] training done!")
+
+    File_log_name = 'logs/multistage_Ids10Test_tent_vote.log'
+    scores_session1, scores_session2, scores_session3, scores_session4 =  reportAccu( cfg['batch_size'], cfg['input_size_w'],
+                                  cfg['input_size_h'], CLASS_NAMES, model)
+    printstr = f"2ed: {scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
+    print(printstr)
+    with open(File_log_name, encoding="utf-8", mode="a") as data:
+        data.write(printstr)
+
+    TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
+    aug_data_sess('./tmp_tent/test/SESSION2', 15, TRAIN_SAVE_PATH)
 
 
 if __name__ == '__main__':

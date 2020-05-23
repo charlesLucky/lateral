@@ -50,7 +50,6 @@ def main(_argv):
         exit()
 
     File_log_name = 'logs/multistage_Ids10Test_tent_vote.log'
-
     CLASS_NAMES = None
     SPLIT_WEIGHTS = (0.9, 0.1, 0.0)  # train cv val vs test
     myloadData = LoadFishDataUtil('./data/tmp_tent/test/SESSION_LT_AUGMENT', cfg['batch_size'], cfg['input_size_w'],
