@@ -86,7 +86,7 @@ def main(_):
         print("[*] training from scratch.")
         epochs, steps = 1, 1
 
-    model.compile(optimizer=optimizer, loss=loss_fn)
+    model.compile(optimizer=optimizer, loss=loss_fn,metrics=['accuracy'])
 
     mc_callback = ModelCheckpoint(
         'checkpoints/' + cfg['sub_name'] + '/e_{epoch}_b_{batch}.ckpt',
