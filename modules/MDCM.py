@@ -35,11 +35,11 @@ def getMDCM(input_shape=None, name="Multi-scale-Dilated"):
 
     x1 = Conv2D(16, (3, 3), dilation_rate=(1, 1), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
-    x2 = Conv2D(16, (3, 3), dilation_rate=(4, 4), padding='same', activation='relu',
+    x2 = Conv2D(16, (3, 3), dilation_rate=(2, 2), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
-    x3 = Conv2D(16, (3, 3), dilation_rate=(8, 8), padding='same', activation='relu',
+    x3 = Conv2D(16, (3, 3), dilation_rate=(4, 4), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
-    x4 = Conv2D(16, (3, 3), dilation_rate=(16, 16), padding='same', activation='relu',
+    x4 = Conv2D(16, (3, 3), dilation_rate=(8, 8), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
 
     merge1 = concatenate([x1, x2, x3, x4])
@@ -48,11 +48,11 @@ def getMDCM(input_shape=None, name="Multi-scale-Dilated"):
 
     x1 = Conv2D(32, (3, 3), dilation_rate=(1, 1), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
-    x2 = Conv2D(32, (3, 3), dilation_rate=(4, 4), padding='same', activation='relu',
+    x2 = Conv2D(32, (3, 3), dilation_rate=(2, 2), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
-    x3 = Conv2D(32, (3, 3), dilation_rate=(8, 8), padding='same', activation='relu',
+    x3 = Conv2D(32, (3, 3), dilation_rate=(4, 4), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
-    x4 = Conv2D(32, (3, 3), dilation_rate=(16, 16), padding='same', activation='relu',
+    x4 = Conv2D(32, (3, 3), dilation_rate=(8, 8), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
 
     merge2 = concatenate([x1, x2, x3, x4])
