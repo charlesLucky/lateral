@@ -83,11 +83,15 @@ def main(_):
                          embd_shape=cfg['embd_shape'],
                          w_decay=cfg['w_decay'],
                          training=True, cfg=cfg)
-    model.summary(line_length=80)
 
     for layer in model.layers:
+        print(layer.name)
         if layer.name == 'arcface_model':
             layer.trainable = False
+    for x in model.trainable_weights:
+        print("trainable:",x.name)
+    print('\n')
+    model.summary(line_length=80)
 
     learning_rate = tf.constant(cfg['base_lr'])
     optimizer = tf.keras.optimizers.SGD(
