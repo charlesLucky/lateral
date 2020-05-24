@@ -208,8 +208,13 @@ def getAccByvote(model_2ed, test_data_dir, sess1_class_num, BATCH_SIZE, IMG_WIDT
     for i in range(sess1_class_num):
         lst = result[i]
         modeval = [x for x in set(lst) if lst.count(x) > 1]
-        modeval = modeval[0]
-        final[i] = modeval
+        if (len(modeval)>0):
+            modeval = modeval[0]
+            final[i] = modeval
+        else:
+            modeval = -9
+            final[i] = modeval
+
         if i == modeval:
             correct = correct + 1
     return correct / sess1_class_num
