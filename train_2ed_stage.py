@@ -10,7 +10,7 @@ from modules.losses import SoftmaxLoss
 from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf,generatePermKey
 from modules.LoadFishDataUtil import LoadFishDataUtil
 from modules.evaluations import reportAccu
-from modules.dataset import aug_data_sess
+from modules.dataset import aug_data_sess,aug_data_sess1
 
 import modules.dataset as dataset
 
@@ -61,6 +61,9 @@ def main(_):
     logging.info("load fish LT sessions dataset.")
     dataset_len = cfg['num_samples']
     steps_per_epoch = dataset_len // cfg['batch_size']
+    TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
+    aug_data_sess1('./data/tmp_tent/test/SESSION1_LT', TRAIN_SAVE_PATH, k=3)  # augmentation
+
     CLASS_NAMES = None
     SPLIT_WEIGHTS = (0.9, 0.1, 0.0)  # train cv val vs test
     myloadData = LoadFishDataUtil('./data/tmp_tent/test/SESSION_LT_AUGMENT', cfg['batch_size'], cfg['input_size_w'], cfg['input_size_h'],
