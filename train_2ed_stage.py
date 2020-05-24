@@ -62,11 +62,11 @@ def main(_):
     dataset_len = cfg['num_samples']
     steps_per_epoch = dataset_len // cfg['batch_size']
     TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
-    aug_data_sess1('./data/tmp_tent/test/SESSION1_LT', TRAIN_SAVE_PATH, k=3)  # augmentation
-
-    aug_data_sess1('./data/tmp_tent/test/SESSION2', './data/tmp_tent/test/SESSION2', k=3)  # augmentation
-    aug_data_sess1('./data/tmp_tent/test/SESSION3', './data/tmp_tent/test/SESSION3', k=3)  # augmentation
-    aug_data_sess1('./data/tmp_tent/test/SESSION4', './data/tmp_tent/test/SESSION4', k=3)  # augmentation
+    # aug_data_sess1('./data/tmp_tent/test/SESSION1_LT', TRAIN_SAVE_PATH, k=3)  # augmentation
+    #
+    # aug_data_sess1('./data/tmp_tent/test/SESSION2', './data/tmp_tent/test/SESSION2', k=3)  # augmentation
+    # aug_data_sess1('./data/tmp_tent/test/SESSION3', './data/tmp_tent/test/SESSION3', k=3)  # augmentation
+    # aug_data_sess1('./data/tmp_tent/test/SESSION4', './data/tmp_tent/test/SESSION4', k=3)  # augmentation
 
     CLASS_NAMES = None
     SPLIT_WEIGHTS = (0.9, 0.1, 0.0)  # train cv val vs test
@@ -85,6 +85,9 @@ def main(_):
                          training=True, cfg=cfg)
     model.summary(line_length=80)
 
+    for layer in model.layers:
+        if layer.name == 'arcface_model':
+            layer.trainable = False
 
     learning_rate = tf.constant(cfg['base_lr'])
     optimizer = tf.keras.optimizers.SGD(
