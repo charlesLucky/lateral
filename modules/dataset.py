@@ -216,7 +216,7 @@ def aug_data(orig_path,SAVE_PATH,num_aug_per_img=5):
             if i > num_aug_per_img:
                 break
 
-def aug_data_sess1(orig_path,SAVE_PATH,k=1): # use k images from testing dataset as gallery and train the model into a classfication model for this ten IDs
+def aug_data_sess1(orig_path,SAVE_PATH,k=1,num_aug_per_img=20): # use k images from testing dataset as gallery and train the model into a classfication model for this ten IDs
     subfolders = [f.path for f in os.scandir(orig_path) if f.is_dir()]
     Filelist = []
     for dirs in subfolders:
@@ -228,7 +228,6 @@ def aug_data_sess1(orig_path,SAVE_PATH,k=1): # use k images from testing dataset
     num_imgs = len(selected_Filelist)
     print('total number of images:', num_imgs)
 
-    num_aug_per_img = 20
     train_datagen = ImageDataGenerator(brightness_range=[0.5, 1.5],
                                        rotation_range=5,
                                        width_shift_range=0.01,
