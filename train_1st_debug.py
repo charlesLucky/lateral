@@ -57,21 +57,21 @@ def main(_):
         dataset_len = cfg['num_samples']
         steps_per_epoch = dataset_len // cfg['batch_size']
 
-        train_datagen = ImageDataGenerator(brightness_range=[0.5, 1.5],
-                                           rotation_range=5,
-                                           width_shift_range=0.01,
-                                           height_shift_range=0.00,
-                                           shear_range=0.2,
-                                           zoom_range=0.3,
-                                           channel_shift_range=10,
-                                           horizontal_flip=False,
-                                           fill_mode='nearest')
-        train_generator = train_datagen.flow_from_directory(
-            './data/tmp_tent/train/',
-            target_size=(150, 150),
-            batch_size=20,
-            class_mode='binary')
-        # train_dataset = loadTrainDS('./data/tmp_tent/train/', BATCH_SIZE=64, cfg=cfg)
+        # train_datagen = ImageDataGenerator(brightness_range=[0.5, 1.5],
+        #                                    rotation_range=5,
+        #                                    width_shift_range=0.01,
+        #                                    height_shift_range=0.00,
+        #                                    shear_range=0.2,
+        #                                    zoom_range=0.3,
+        #                                    channel_shift_range=10,
+        #                                    horizontal_flip=False,
+        #                                    fill_mode='nearest')
+        # train_generator = train_datagen.flow_from_directory(
+        #     './data/tmp_tent/train/',
+        #     target_size=(150, 150),
+        #     batch_size=20,
+        #     class_mode='binary')
+        train_dataset = loadTrainDS('./data/tmp_tent/train/', BATCH_SIZE=64, cfg=cfg)
 
     else:
         logging.info("load fake dataset.")
@@ -106,7 +106,7 @@ def main(_):
     tb_callback._samples_seen = steps * cfg['batch_size']
     callbacks = [mc_callback, tb_callback]
 
-    model.fit_generator(train_generator,
+    model.fit(train_dataset,
               epochs=cfg['epochs'],
               callbacks=callbacks,
               steps_per_epoch=10000,
