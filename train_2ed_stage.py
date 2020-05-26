@@ -78,10 +78,10 @@ def main(_):
                          w_decay=cfg['w_decay'],
                          training=True, cfg=cfg)
 
-    for layer in model.layers:
-        print(layer.name)
-        if layer.name == 'arcface_model':
-            layer.trainable = False
+    # for layer in model.layers:
+    #     print(layer.name)
+    #     if layer.name == 'arcface_model':
+    #         layer.trainable = False
     for x in model.trainable_weights:
         print("trainable:",x.name)
     print('\n')
