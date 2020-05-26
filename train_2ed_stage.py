@@ -78,7 +78,7 @@ def main(_):
                          w_decay=cfg['w_decay'],
                          training=True, cfg=cfg)
 
-    FREEZE_LAYERS = 28
+    FREEZE_LAYERS = 200
     for layer in model.layers:
         print('*1:',layer.name)
         if layer.name == 'arcface_model':
