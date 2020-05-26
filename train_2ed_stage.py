@@ -83,8 +83,11 @@ def main(_):
         print(layer.name)
         if layer.name == 'arcface_model':
             for layer2 in layer.layers:
-                print(layer2.name)
-                layer2.trainable = False
+                if layer2.name == 'resnet50':
+                    for layer3 in layer.layers[:FREEZE_LAYERS]:
+                        print(layer3.name)
+                        layer3.trainable = False
+
     for x in model.trainable_weights:
         print("trainable:",x.name)
     print('\n')
