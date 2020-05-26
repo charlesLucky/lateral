@@ -85,7 +85,7 @@ def main(_):
             for layer2 in layer.layers:
                 print('*2:', layer2.name)
                 if layer2.name == 'resnet50':
-                    for layer3 in layer.layers[:FREEZE_LAYERS]:
+                    for layer3 in layer2.layers[:FREEZE_LAYERS]:
                         print('*3:',layer3.name)
                         layer3.trainable = False
 
