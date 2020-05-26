@@ -69,7 +69,7 @@ def main(_):
     train_dataset, val_dataset, test_dataset, STEPS_PER_EPOCH, CLASS_NAMES, class_num = myloadData.loadFishData()
     print(f'total class:{class_num}')
 
-    epochs, steps = FLAGS.epochs, 1
+    epochs, steps = int(FLAGS.epochs), 1
 
     model = ArcFishStackModel(basemodel=basemodel,
                          num_classes=class_num,
