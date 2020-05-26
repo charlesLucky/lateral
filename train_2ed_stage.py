@@ -88,6 +88,9 @@ def main(_):
                     for layer3 in layer2.layers[:FREEZE_LAYERS]:
                         print('*3:',layer3.name)
                         layer3.trainable = False
+                    for layer3 in layer2.layers[FREEZE_LAYERS:]:
+                        print('*3 Train:',layer3.name)
+                        layer3.trainable = True
 
     for x in model.trainable_weights:
         print("trainable:",x.name)
