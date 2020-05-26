@@ -82,9 +82,9 @@ def main(_):
     for layer in model.layers:
         print(layer.name)
         if layer.name == 'arcface_model':
-            for layer in layer.layers:
-                print(layer.name)
-                layer.trainable = False
+            for layer2 in layer.layers:
+                print(layer2.name)
+                layer2.trainable = False
     for x in model.trainable_weights:
         print("trainable:",x.name)
     print('\n')
