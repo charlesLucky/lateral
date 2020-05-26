@@ -55,12 +55,12 @@ def main(_):
         logging.info("load ms1m dataset.")
         dataset_len = cfg['num_samples']
         steps_per_epoch = dataset_len // cfg['batch_size']
-        ##
-        generateDataset(byIDorByImages=True,
-                        train_weight=0.67)  # half as train and half as test  0.67-> 20 as train 10 as test
-        orig_path = './data/tmp_tent/train/'
-        SAVE_PATH = './data/tmp_tent/SESSION1_ST_AUGMENT'
-        aug_data(orig_path, SAVE_PATH, num_aug_per_img=5)
+        # ##
+        # generateDataset(byIDorByImages=True,
+        #                 train_weight=0.67)  # half as train and half as test  0.67-> 20 as train 10 as test
+        # orig_path = './data/tmp_tent/train/'
+        # SAVE_PATH = './data/tmp_tent/SESSION1_ST_AUGMENT'
+        # aug_data(orig_path, SAVE_PATH, num_aug_per_img=5)
 
         CLASS_NAMES = None
         SPLIT_WEIGHTS = (0.9, 0.1, 0.0)  # train cv val vs test
