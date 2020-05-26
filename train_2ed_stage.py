@@ -16,6 +16,8 @@ import modules.dataset as dataset
 
 flags.DEFINE_string('cfg_path', './configs/ResNet50_2ed_stage.yaml', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
+flags.DEFINE_string('epochs', '1', 'which epoch to start')
+flags.DEFINE_string('stage', '2', 'which stage to start')
 flags.DEFINE_enum('mode', 'fit', ['fit', 'eager_tf'],
                   'fit: model.fit, eager_tf: custom GradientTape')
 
@@ -59,14 +61,6 @@ def main(_):
 
 
     logging.info("load fish LT sessions dataset.")
-    dataset_len = cfg['num_samples']
-    steps_per_epoch = dataset_len // cfg['batch_size']
-    TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
-    # aug_data_sess1('./data/tmp_tent/test/SESSION1_LT', TRAIN_SAVE_PATH, k=3)  # augmentation
-    #
-    # aug_data_sess1('./data/tmp_tent/test/SESSION2', './data/tmp_tent/test/SESSION2', k=3)  # augmentation
-    # aug_data_sess1('./data/tmp_tent/test/SESSION3', './data/tmp_tent/test/SESSION3', k=3)  # augmentation
-    # aug_data_sess1('./data/tmp_tent/test/SESSION4', './data/tmp_tent/test/SESSION4', k=3)  # augmentation
 
     CLASS_NAMES = None
     SPLIT_WEIGHTS = (0.9, 0.1, 0.0)  # train cv val vs test
@@ -75,7 +69,7 @@ def main(_):
     train_dataset, val_dataset, test_dataset, STEPS_PER_EPOCH, CLASS_NAMES, class_num = myloadData.loadFishData()
     print(f'total class:{class_num}')
 
-    epochs, steps = 1, 1
+    epochs, steps = FLAGS.epochs, 1
 
     model = ArcFishStackModel(basemodel=basemodel,
                          num_classes=class_num,
@@ -112,7 +106,7 @@ def main(_):
     tb_callback._total_batches_seen = steps
     tb_callback._samples_seen = steps * cfg['batch_size']
 
-    es = EarlyStopping(monitor='accuracy', mode='min', verbose=1, patience=5)
+    es = EarlyStopping(monitor='accuracy', mode='max', verbose=1, patience=3)
 
     callbacks = [mc_callback, tb_callback,es]
 
@@ -125,7 +119,7 @@ def main(_):
     File_log_name = 'logs/multistage_Ids10Test_tent_vote.log'
     scores_session1, scores_session2, scores_session3, scores_session4 =  reportAccu( cfg['batch_size'], cfg['input_size_w'],
                                   cfg['input_size_h'], CLASS_NAMES, model)
-    printstr = f"2ed: {scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
+    printstr = f"stage: {FLAGS.stage}: {scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
     print(printstr)
     with open(File_log_name, encoding="utf-8", mode="a") as data:
         data.write(printstr)

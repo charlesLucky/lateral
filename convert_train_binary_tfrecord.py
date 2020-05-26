@@ -79,6 +79,14 @@ def main(_):
         Label_dict = labelToDigitDict(dataset_path)
         with open('data/Label_dict_2ed.json', 'w') as fp:
             json.dump(Label_dict, fp, sort_keys=True, indent=4)
+    elif FLAGS.stage == '3':
+        TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
+        aug_data_sess1('./data/tmp_tent/test/SESSION1_LT', TRAIN_SAVE_PATH,k=2)  # augmentation
+        dataset_path = TRAIN_SAVE_PATH
+        output_path = './data/New_ROI_LT1_bin.tfrecord'
+        Label_dict = labelToDigitDict(dataset_path)
+        with open('data/Label_dict_2ed.json', 'w') as fp:
+            json.dump(Label_dict, fp, sort_keys=True, indent=4)
     else:
         print('[*] stage should be given!')
         
