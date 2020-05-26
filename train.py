@@ -80,8 +80,8 @@ def main(_):
     model.compile(optimizer=optimizer, loss=loss_fn)
 
     mc_callback = ModelCheckpoint(
-        'checkpoints/' + cfg['sub_name'] + '/e_{epoch}_b_{batch}.ckpt',
-        save_freq=cfg['save_steps'] * cfg['batch_size'], verbose=1,
+        'checkpoints/' + cfg['sub_name'] + '/e_{epoch}_b_{batch}.ckpt',#save_freq=cfg['save_steps'] * cfg['batch_size'],
+         verbose=1, monitor='loss', save_best_only=True,
         save_weights_only=True)
     tb_callback = TensorBoard(log_dir='logs/',
                               update_freq=cfg['batch_size'] * 5,
