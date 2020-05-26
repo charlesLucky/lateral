@@ -80,8 +80,9 @@ def main(_):
 
     FREEZE_LAYERS = 28
     for layer in model.layers:
+        print(layer.name)
         if layer.name == 'arcface_model':
-            for layer in layer.layers[:FREEZE_LAYERS]:
+            for layer in layer.layers:
                 print(layer.name)
                 layer.trainable = False
     for x in model.trainable_weights:
