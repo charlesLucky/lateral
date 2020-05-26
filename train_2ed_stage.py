@@ -78,10 +78,12 @@ def main(_):
                          w_decay=cfg['w_decay'],
                          training=True, cfg=cfg)
 
+    FREEZE_LAYERS = 28
     for layer in model.layers:
-        print(layer.name)
         if layer.name == 'arcface_model':
-            layer.trainable = False
+            for layer in layer.layers[:FREEZE_LAYERS]:
+                print(layer.name)
+                layer.trainable = False
     for x in model.trainable_weights:
         print("trainable:",x.name)
     print('\n')
