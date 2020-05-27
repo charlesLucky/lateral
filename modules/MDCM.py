@@ -62,12 +62,12 @@ def getMDCM(input_shape=None, name="Multi-scale-Dilated"):
     x = BatchNormalization()(x)
     x = MaxPooling2D(pool_size=(2, 2))(x)
 
-    x = Conv2D(128, (3, 3), padding='same', activation='relu',
+    x = Conv2D(256, (3, 3), padding='same', activation='relu',
                kernel_regularizer=regularizers.l2(weight_decay))(merge2)
     x = BatchNormalization()(x)
     x = MaxPooling2D(pool_size=(2, 2))(x)
 
-    x = Conv2D(256, (3, 3), padding='same', strides=(2, 2), activation='relu',
+    x = Conv2D(512, (3, 3), padding='same', strides=(2, 2), activation='relu',
                kernel_regularizer=regularizers.l2(weight_decay))(x)
     x = BatchNormalization()(x)
     x = MaxPooling2D(pool_size=(2, 2))(x)
