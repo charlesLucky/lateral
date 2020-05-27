@@ -5,9 +5,9 @@ batch_size: 20
 input_size_w: 320
 input_size_h: 75
 embd_shape: 512
-sub_name: 'ResNet50_2ed'
-1st_sub_name: 'ResNet50'
-backbone_type: 'ResNet50' # 'ResNet50', 'MobileNetV2' VGG16
+sub_name: 'VGG19_2ed'
+1st_sub_name: 'VGG19'
+backbone_type: 'VGG19' # 'ResNet50', 'MobileNetV2' VGG16
 head_type: NormHead # 'ArcHead', 'NormHead'
 is_ccrop: True # central-cropping or not
 
