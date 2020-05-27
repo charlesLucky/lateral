@@ -33,12 +33,7 @@ def getMDCM(input_shape=None, name="Multi-scale-Dilated"):
     # kernal_size = (3,3)
     kernal_size = (5,3)
 
-    x = Conv2D(64, kernal_size, padding='same', activation='relu', kernel_regularizer=regularizers.l2(weight_decay))(img_x)
-    x = BatchNormalization()(x)
-    x = MaxPooling2D(pool_size=(2, 2))(x)
-
-    x = Conv2D(128, kernal_size, padding='same', activation='relu',
-               kernel_regularizer=regularizers.l2(weight_decay))(x)
+    x = Conv2D(16, kernal_size, padding='same', activation='relu', kernel_regularizer=regularizers.l2(weight_decay))(img_x)
     x = BatchNormalization()(x)
     x = MaxPooling2D(pool_size=(2, 2))(x)
 
@@ -52,27 +47,52 @@ def getMDCM(input_shape=None, name="Multi-scale-Dilated"):
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
 
     merge1 = concatenate([x1, x2, x3, x4])
+    x = BatchNormalization()(merge1)
+    x = MaxPooling2D(pool_size=(2, 2))(x)
 
-    x = Conv2D(16, kernal_size, padding='same', activation='relu', kernel_regularizer=regularizers.l2(weight_decay))(merge1)
+    x = Conv2D(32, kernal_size, padding='same', activation='relu', kernel_regularizer=regularizers.l2(weight_decay))(x)
+    x = BatchNormalization()(x)
+    x = MaxPooling2D(pool_size=(2, 2))(x)
 
-    x1 = Conv2D(32, kernal_size, dilation_rate=(1, 1), padding='same', activation='relu',
+    x11 = Conv2D(32, kernal_size, dilation_rate=(1, 1), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
-    x2 = Conv2D(32, kernal_size, dilation_rate=(2, 2), padding='same', activation='relu',
+    x21 = Conv2D(32, kernal_size, dilation_rate=(2, 2), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
-    x3 = Conv2D(32, kernal_size, dilation_rate=(4, 4), padding='same', activation='relu',
+    x31 = Conv2D(32, kernal_size, dilation_rate=(4, 4), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
-    x4 = Conv2D(32, kernal_size, dilation_rate=(8, 8), padding='same', activation='relu',
+    x41 = Conv2D(32, kernal_size, dilation_rate=(8, 8), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
 
-    merge2 = concatenate([x1, x2, x3, x4])
+    merge2 = concatenate([x11, x21, x31, x41])
+    x = BatchNormalization()(merge2)
+    x = MaxPooling2D(pool_size=(2, 2))(x)
+
+
+    x = Conv2D(64, kernal_size, padding='same', activation='relu', kernel_regularizer=regularizers.l2(weight_decay))(x)
+    x = BatchNormalization()(x)
+    x = MaxPooling2D(pool_size=(2, 2))(x)
+
+    x12 = Conv2D(64, kernal_size, dilation_rate=(1, 1), padding='same', activation='relu',
+                kernel_regularizer=regularizers.l2(weight_decay))(x)
+    x22 = Conv2D(64, kernal_size, dilation_rate=(2, 2), padding='same', activation='relu',
+                kernel_regularizer=regularizers.l2(weight_decay))(x)
+    x32 = Conv2D(64, kernal_size, dilation_rate=(4, 4), padding='same', activation='relu',
+                kernel_regularizer=regularizers.l2(weight_decay))(x)
+    x42 = Conv2D(64, kernal_size, dilation_rate=(8, 8), padding='same', activation='relu',
+                kernel_regularizer=regularizers.l2(weight_decay))(x)
+
+    merge3 = concatenate([x12, x22, x32, x42])
+    x = BatchNormalization()(merge3)
+    x = MaxPooling2D(pool_size=(2, 2))(x)
+
 
     x = Conv2D(128, kernal_size, padding='same', activation='relu',
-               kernel_regularizer=regularizers.l2(weight_decay))(merge2)
+               kernel_regularizer=regularizers.l2(weight_decay))(x)
     x = BatchNormalization()(x)
     x = MaxPooling2D(pool_size=(2, 2))(x)
 
     x = Conv2D(256, kernal_size, padding='same', activation='relu',
-               kernel_regularizer=regularizers.l2(weight_decay))(merge2)
+               kernel_regularizer=regularizers.l2(weight_decay))(x)
     x = BatchNormalization()(x)
     x = MaxPooling2D(pool_size=(2, 2))(x)
 
