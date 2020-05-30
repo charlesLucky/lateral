@@ -53,8 +53,7 @@ def main(_):
     for layer in model.layers:
         print('*1:', layer.name)
         if layer.name == 'vgg16':
-            for layer2 in layer.layers:
-                print('*2:', layer2.name)
+            layer.summary(line_length=80)
 
     if cfg['train_dataset']:
         logging.info("load ms1m dataset.")
