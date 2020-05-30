@@ -28,7 +28,7 @@ Multi-scale Dilated Convolution module
 '''
 
 def getMDCM(input_shape=None, name="Multi-scale-Dilated"):
-    weight_decay = 0.005
+    weight_decay = 5e-4
     img_x = Input(shape=input_shape)
     kernal_size = (3,3)
     # kernal_size = (5,3)
