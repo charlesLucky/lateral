@@ -80,16 +80,16 @@ def getMDCM(input_shape=None, name="Multi-scale-Dilated"):
 
     merge3 = concatenate([x12, x22, x32, x42])
 
-    x = Conv2D(64, kernal_size, padding='same', activation='relu', kernel_regularizer=regularizers.l2(weight_decay))(merge3)
+    x = Conv2D(128, kernal_size, padding='same', activation='relu', kernel_regularizer=regularizers.l2(weight_decay))(merge3)
 
 
-    x12 = Conv2D(64, kernal_size, dilation_rate=(1, 1), padding='same', activation='relu',
+    x12 = Conv2D(128, kernal_size, dilation_rate=(1, 1), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
-    x22 = Conv2D(64, kernal_size, dilation_rate=(2, 2), padding='same', activation='relu',
+    x22 = Conv2D(128, kernal_size, dilation_rate=(2, 2), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
-    x32 = Conv2D(64, kernal_size, dilation_rate=(4, 4), padding='same', activation='relu',
+    x32 = Conv2D(128, kernal_size, dilation_rate=(4, 4), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
-    x42 = Conv2D(64, kernal_size, dilation_rate=(8, 8), padding='same', activation='relu',
+    x42 = Conv2D(128, kernal_size, dilation_rate=(8, 8), padding='same', activation='relu',
                 kernel_regularizer=regularizers.l2(weight_decay))(x)
 
     merge4 = concatenate([x12, x22, x32, x42])
