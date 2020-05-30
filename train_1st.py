@@ -50,6 +50,11 @@ def main(_):
                          w_decay=cfg['w_decay'],
                          training=True,cfg=cfg)
     model.summary(line_length=80)
+    for layer in model.layers:
+        print('*1:', layer.name)
+        if layer.name == 'vgg16':
+            for layer2 in layer.layers:
+                print('*2:', layer2.name)
 
     if cfg['train_dataset']:
         logging.info("load ms1m dataset.")
