@@ -220,7 +220,10 @@ def aug_data_sess1(orig_path,SAVE_PATH,k=1,num_aug_per_img=20): # use k images f
     subfolders = [f.path for f in os.scandir(orig_path) if f.is_dir()]
     Filelist = []
     for dirs in subfolders:
-        filename = random.choices(os.listdir(dirs), k=k)  # change dir name to whatever
+        if k==0:
+            filename = os.listdir(dirs)
+        else:
+            filename = random.choices(os.listdir(dirs), k=k)  # change dir name to whatever
         print(filename)
         for file in filename:
             Filelist.append(os.path.join(dirs, file))
@@ -260,7 +263,10 @@ def aug_data_sess(orig_path,SAVE_PATH,k=1):
     subfolders = [f.path for f in os.scandir(orig_path) if f.is_dir()]
     Filelist = []
     for dirs in subfolders:
-        filename = random.choices(os.listdir(dirs), k=k)  # change dir name to whatever
+        if k==0:
+            filename = os.listdir(dirs)
+        else:
+            filename = random.choices(os.listdir(dirs), k=k)  # change dir name to whatever
         print(filename)
         for file in filename:
             Filelist.append(os.path.join(dirs, file))
