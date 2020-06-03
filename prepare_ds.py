@@ -20,6 +20,7 @@ import random
 import tensorflow as tf
 from modules.dataset import generateDataset, aug_data, aug_data_sess1, aug_data_sess
 import json
+from shutil import copy, rmtree, copytree, copy2
 
 flags.DEFINE_string('dataset_path', './data/tmp_tent/SESSION1_ST_AUGMENT',
                     'path to dataset')
@@ -59,6 +60,9 @@ def main(_):
         Label_dict = labelToDigitDict(dataset_path)
     elif FLAGS.stage == '2':
         TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
+        TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
+        if os.path.exists(TRAIN_SAVE_PATH):
+            rmtree(TRAIN_SAVE_PATH)
         aug_data_sess1('./data/tmp_tent/test/SESSION1_LT', TRAIN_SAVE_PATH, k=6)  # augmentation
         dataset_path = TRAIN_SAVE_PATH
         output_path = './data/New_ROI_LT1_bin.tfrecord'
@@ -67,6 +71,8 @@ def main(_):
             json.dump(Label_dict, fp, sort_keys=True, indent=4)
     elif FLAGS.stage == '3':
         TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
+        if os.path.exists(TRAIN_SAVE_PATH):
+            rmtree(TRAIN_SAVE_PATH)
         aug_data_sess('./data/tmp_tent/test/SESSION2', TRAIN_SAVE_PATH, k=2)
     elif FLAGS.stage == '4':
         TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
