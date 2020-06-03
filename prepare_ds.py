@@ -76,6 +76,9 @@ def main(_):
         aug_data_sess('./data/tmp_tent/test/SESSION2', TRAIN_SAVE_PATH, k=0)
     elif FLAGS.stage == '4':
         TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
+        if os.path.exists(TRAIN_SAVE_PATH):
+            rmtree(TRAIN_SAVE_PATH)
+        TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
         aug_data_sess('./data/tmp_tent/test/SESSION3', TRAIN_SAVE_PATH, k=0)
     else:
         print('[*] stage should be given!')
