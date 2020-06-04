@@ -336,7 +336,8 @@ def loadTestDS(test_data_dir = './data/tmp_tent/test/SESSION1_LT',BATCH_SIZE=64,
 def loadTrainDS(test_data_dir = './data/tmp_tent/train/SESSION1_LT',BATCH_SIZE=64,cfg=None):
     def get_label(file_path):
       parts = tf.strings.split(file_path, '/')
-      return parts[-2]
+      label = tf.cast(parts[-2],tf.int32)
+      return label
     def _transform_images(is_ccrop=False, cfg=None):
         def transform_images(x_train):
             x_train = tf.image.resize(x_train, (cfg['input_size_w'] + 20, cfg['input_size_h'] + 20))
