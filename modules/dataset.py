@@ -360,7 +360,7 @@ def loadTrainDS(test_data_dir = './data/tmp_tent/train/SESSION1_LT',BATCH_SIZE=6
 
     # print(f"we have total {self.image_count} images in this folder")
     # Set `num_parallel_calls` so multiple images are loaded/processed in parallel.
-    labeled_ds = list_ds.map(process_path, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+    labeled_ds = list_ds.map(process_path, num_parallel_calls=tf.data.experimental.AUTOTUNE).repeat()
     dataset =labeled_ds.batch(BATCH_SIZE)
     dataset = dataset.prefetch(
         buffer_size=tf.data.experimental.AUTOTUNE)
