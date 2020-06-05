@@ -30,7 +30,7 @@ from shutil import copy,rmtree,copytree,copy2
 
 flags.DEFINE_string('cfg_path', './configs/ResNet50_1st.yaml', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
-flags.DEFINE_enum('mode', 'fit', ['fit', 'eager_tf'],
+flags.DEFINE_enum('mode', 'eager_tf', ['fit', 'eager_tf'],
                   'fit: model.fit, eager_tf: custom GradientTape')
 
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -182,12 +182,12 @@ def main(_):
 
     print("[*] training done!")
 
-    File_log_name = 'logs/multistage_Ids10Test_tent_vote.log'
-    scores_session1, scores_session2, scores_session3, scores_session4 =  reportAccu_ds( cfg,model)
-    printstr = f"stage: {FLAGS.stage}: {scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
-    print(printstr)
-    with open(File_log_name, encoding="utf-8", mode="a") as data:
-        data.write(printstr)
+    # File_log_name = 'logs/multistage_Ids10Test_tent_vote.log'
+    # scores_session1, scores_session2, scores_session3, scores_session4 =  reportAccu_ds( cfg,model)
+    # printstr = f"stage: {FLAGS.stage}: {scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
+    # print(printstr)
+    # with open(File_log_name, encoding="utf-8", mode="a") as data:
+    #     data.write(printstr)
 
 
 if __name__ == '__main__':
