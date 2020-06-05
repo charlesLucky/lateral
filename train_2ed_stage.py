@@ -79,22 +79,14 @@ def main(_):
                          training=True, cfg=cfg)
 
     # FREEZE_LAYERS = 145
-    # for layer in model.layers:
-    #     print('*1:',layer.name)
-    #     if layer.name == 'arcface_model':
-    #         for layer2 in layer.layers:
-    #             print('*2:', layer2.name)
-    #             if layer2.name == 'resnet50':
-    #                 for layer3 in layer2.layers[:FREEZE_LAYERS]:
-    #                     print('*3:',layer3.name)
-    #                     layer3.trainable = False
-    #                 for layer3 in layer2.layers[FREEZE_LAYERS:]:
-    #                     print('*3 Train:',layer3.name)
-    #                     layer3.trainable = True
+    for layer in model.layers:
+        print('*1:',layer.name)
+        if layer.name == 'arcface_model':
+            layer.trainable = False
 
-    # for x in model.trainable_weights:
-    #     print("trainable:",x.name)
-    # print('\n')
+    for x in model.trainable_weights:
+        print("trainable:",x.name)
+    print('\n')
     model.summary(line_length=80)
 
     learning_rate = tf.constant(cfg['base_lr'])
