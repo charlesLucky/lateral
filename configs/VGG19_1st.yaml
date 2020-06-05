@@ -20,7 +20,7 @@ num_samples: 17233
 epochs: 100
 base_lr: 0.01
 w_decay: !!float 5e-4
-save_steps: 10000
+save_steps: 1000
 
 # test
 test_dataset: './data/test_dataset'
