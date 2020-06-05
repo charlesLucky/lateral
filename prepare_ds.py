@@ -51,13 +51,13 @@ def main(_):
         generateDataset(byIDorByImages=True,
                         train_weight=0.67)  # half as train and half as test  0.67-> 20 as train 10 as test
 
-        orig_path = './data/tmp_tent/train/'
-        SAVE_PATH = './data/tmp_tent/SESSION1_ST_AUGMENT'
-
-        aug_data(orig_path, SAVE_PATH, num_aug_per_img=5)
-        dataset_path = SAVE_PATH
-        output_path = './data/New_ROI_STLT_bin.tfrecord'
-        Label_dict = labelToDigitDict(dataset_path)
+        # orig_path = './data/tmp_tent/train/'
+        # SAVE_PATH = './data/tmp_tent/SESSION1_ST_AUGMENT'
+        #
+        # aug_data(orig_path, SAVE_PATH, num_aug_per_img=5)
+        # dataset_path = SAVE_PATH
+        # output_path = './data/New_ROI_STLT_bin.tfrecord'
+        # Label_dict = labelToDigitDict(dataset_path)
     elif FLAGS.stage == '2':
         TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
         TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
