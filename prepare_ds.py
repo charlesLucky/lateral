@@ -60,7 +60,6 @@ def main(_):
         # Label_dict = labelToDigitDict(dataset_path)
     elif FLAGS.stage == '2':
         TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
-        TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
         if os.path.exists(TRAIN_SAVE_PATH):
             rmtree(TRAIN_SAVE_PATH)
         aug_data_sess1('./data/tmp_tent/test/SESSION1_LT', TRAIN_SAVE_PATH, k=0)  # augmentation
