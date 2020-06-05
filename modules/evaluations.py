@@ -188,17 +188,17 @@ def reportAccu(BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES, model_2ed):
 
 
 def reportAccu_ds(cfg, model_2ed):
-    test_data_dir = './data/stage2/SESSION1_LT'
+    test_data_dir = './data/stage2/SESSION1_LT/'
 
     scores_session1 = getAccByvote_ds(model_2ed, test_data_dir, cfg)
 
-    test_data_dir = './data/stage2/SESSION2'
+    test_data_dir = './data/stage2/SESSION2/'
     scores_session2 = getAccByvote_ds(model_2ed, test_data_dir, cfg)
 
-    test_data_dir = './data/stage2/SESSION3'
+    test_data_dir = './data/stage2/SESSION3/'
     scores_session3 = getAccByvote_ds(model_2ed, test_data_dir, cfg)
 
-    test_data_dir = './data/stage2/SESSION4'
+    test_data_dir = './data/stage2/SESSION4/'
     scores_session4 = getAccByvote_ds(model_2ed, test_data_dir, cfg)
 
     return scores_session1, scores_session2, scores_session3, scores_session4
