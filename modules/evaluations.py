@@ -186,6 +186,58 @@ def reportAccu(BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES, model_2ed):
     return scores_session1, scores_session2, scores_session3, scores_session4
 
 
+
+def reportAccu_ds(cfg, model_2ed):
+    test_data_dir = './data/stage2/SESSION1_LT'
+
+    scores_session1 = getAccByvote_ds(model_2ed, test_data_dir, cfg)
+
+    test_data_dir = './data/stage2/SESSION2'
+    scores_session2 = getAccByvote_ds(model_2ed, test_data_dir, cfg)
+
+    test_data_dir = './data/stage2/SESSION3'
+    scores_session3 = getAccByvote_ds(model_2ed, test_data_dir, cfg)
+
+    test_data_dir = './data/stage2/SESSION4'
+    scores_session4 = getAccByvote_ds(model_2ed, test_data_dir, cfg)
+
+    return scores_session1, scores_session2, scores_session3, scores_session4
+
+
+
+def getAccByvote_ds(model_2ed, test_data_dir, cfg, sess1_class_num=10):
+    sess1_test_dataset = loadTestDS(test_data_dir, BATCH_SIZE=cfg['batch_size'], cfg=cfg)
+    ds_it = iter(sess1_test_dataset)
+
+    result = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 0: []}
+
+    num_batch = 0
+    for batch in sess1_test_dataset:
+        imgs, label = next(ds_it)
+        output = model_2ed.predict(imgs)
+        output = tf.argmax(tf.transpose(output))
+        for i in range(output.shape[0]):
+            mylabel = label[i].numpy()[0][0]
+            result[mylabel].append(int(output[i]))
+
+    # print(result)
+    final = {}
+    correct = 0
+    for i in range(sess1_class_num):
+        lst = result[i]
+        modeval = [x for x in set(lst) if lst.count(x) > 1]
+        if (len(modeval)>0):
+            modeval = modeval[0]
+            final[i] = modeval
+        else:
+            modeval = -9
+            final[i] = modeval
+
+        if i == modeval:
+            correct = correct + 1
+    return correct / sess1_class_num
+
+
 def getAccByvote(model_2ed, test_data_dir, sess1_class_num, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES):
     testloadData = LoadFishDataUtil(test_data_dir, BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES)
     sess1_test_dataset, sess1_class_num = testloadData.loadTestFishDataWithname()

@@ -23,9 +23,7 @@ from modules.losses import SoftmaxLoss
 from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf,generatePermKey
 
 from modules.dataset  import loadTrainDS
-
-from modules.LoadFishDataUtil import LoadFishDataUtil
-from tensorflow.keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img, save_img
+from modules.evaluations import reportAccu_ds
 import tqdm
 import pathlib
 from shutil import copy,rmtree,copytree,copy2
@@ -184,6 +182,12 @@ def main(_):
 
     print("[*] training done!")
 
+    File_log_name = 'logs/multistage_Ids10Test_tent_vote.log'
+    scores_session1, scores_session2, scores_session3, scores_session4 =  reportAccu_ds( cfg,model)
+    printstr = f"stage: {FLAGS.stage}: {scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
+    print(printstr)
+    with open(File_log_name, encoding="utf-8", mode="a") as data:
+        data.write(printstr)
 
 
 if __name__ == '__main__':
