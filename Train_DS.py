@@ -93,7 +93,7 @@ def main(_):
 
         ds_path = './data/tmp_tent/train/'
         save_dir = './data/tmp_tent/train_ds/'
-        # renameDir(ds_path, save_dir)
+        renameDir(ds_path, save_dir)
 
         logging.info("load ms1m dataset.")
         dataset_len = cfg['num_samples']
