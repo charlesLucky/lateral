@@ -26,9 +26,10 @@ flags.DEFINE_string('dataset_path', './data/tmp_tent/SESSION1_ST_AUGMENT',
                     'path to dataset')
 flags.DEFINE_string('output_path', './data/New_ROI_STLT_bin.tfrecord',
                     'path to ouput tfrecord')
-
 flags.DEFINE_string('stage', '0',
                     'which stage,1,2')
+flags.DEFINE_string('ds_remark', 'SESSION_TENT_NEW',
+                    'SESSION_TENT_NEW,SESSION_TENT,SESSION_AQUARIUM_NEW,SESSION_AQUARIUM')
 
 
 def main(_):
@@ -49,7 +50,7 @@ def main(_):
     output_path = ''
     if FLAGS.stage == '1':
         generateDataset(byIDorByImages=True,
-                        train_weight=0.67,ds_remark = 'SESSION_TENT_NEW')  # half as train and half as test  0.67-> 20 as train 10 as test
+                        train_weight=0.67,ds_remark =FLAGS.ds_remark)  # half as train and half as test  0.67-> 20 as train 10 as test
 
         # orig_path = './data/tmp_tent/train/'
         # SAVE_PATH = './data/tmp_tent/SESSION1_ST_AUGMENT'
