@@ -49,7 +49,7 @@ def main(_):
     output_path = ''
     if FLAGS.stage == '1':
         generateDataset(byIDorByImages=True,
-                        train_weight=0.67)  # half as train and half as test  0.67-> 20 as train 10 as test
+                        train_weight=0.67,ds_remark = 'SESSION_TENT_NEW')  # half as train and half as test  0.67-> 20 as train 10 as test
 
         # orig_path = './data/tmp_tent/train/'
         # SAVE_PATH = './data/tmp_tent/SESSION1_ST_AUGMENT'

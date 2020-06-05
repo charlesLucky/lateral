@@ -83,21 +83,16 @@ def addPrefix(path,prefix):
 #byIDorByImages = args.byIDorByImages
 #train_weight = args.train_weight
 #print(byIDorByImages)
-def generateDataset(byIDorByImages=True,train_weight=0.5,train_dir_tent='data/tmp_tent/train/',test_dir_tent='data/tmp_tent/test/',includeST=True, includeTentnAquaBoth=False):
+def generateDataset(byIDorByImages=True,train_weight=0.5,train_dir_tent='data/tmp_tent/train/',ds_remark = 'SESSION_TENT_NEW',includeST=True, includeTentnAquaBoth=False):
     test_dir_tent = 'data/tmp_tent/test/'
-    train_dir_aqua = 'data/tmp_aqua/train/'
-    test_dir_aqua = 'data/tmp_aqua/test/'
 
     # remove any file exist
     if os.path.exists(train_dir_tent):
         rmtree(train_dir_tent)
-        # rmtree(train_dir_aqua)
         rmtree(test_dir_tent)
-        # rmtree(test_dir_aqua)
 
     # check_folder(train_dir)
     check_folder(test_dir_tent)
-    check_folder(test_dir_aqua)
 
     # first copy ST to train
     if includeST:
@@ -116,10 +111,10 @@ def generateDataset(byIDorByImages=True,train_weight=0.5,train_dir_tent='data/tm
         print(train_ID_list)
         print("above IDs are used in training, remianing will be used for testing, in dir tmp_tent/test/*")
 
-        generateDatasetBySplitingIdentity('data/SESSION_TENT_NEW/SESSION1_LT', train_ID_list,train_dir_tent,test_dir_tent,pre='sess1')
-        generateDatasetBySplitingIdentity('data/SESSION_TENT_NEW/SESSION2', train_ID_list,train_dir_tent,test_dir_tent,pre='sess2')
-        generateDatasetBySplitingIdentity('data/SESSION_TENT_NEW/SESSION3', train_ID_list,train_dir_tent,test_dir_tent,pre='sess3')
-        generateDatasetBySplitingIdentity('data/SESSION_TENT_NEW/SESSION4', train_ID_list,train_dir_tent,test_dir_tent,pre='sess4')
+        generateDatasetBySplitingIdentity('data/'+ds_remark+'/SESSION1_LT', train_ID_list,train_dir_tent,test_dir_tent,pre='sess1')
+        generateDatasetBySplitingIdentity('data/'+ds_remark+'/SESSION2', train_ID_list,train_dir_tent,test_dir_tent,pre='sess2')
+        generateDatasetBySplitingIdentity('data/'+ds_remark+'/SESSION3', train_ID_list,train_dir_tent,test_dir_tent,pre='sess3')
+        generateDatasetBySplitingIdentity('data/'+ds_remark+'/SESSION4', train_ID_list,train_dir_tent,test_dir_tent,pre='sess4')
 
 
         # generateDatasetBySplitingIdentity('data/SESSION_AQUARIUM/SESSION1_LT', train_ID_list, train_dir_aqua, test_dir_aqua,pre='sess1')
