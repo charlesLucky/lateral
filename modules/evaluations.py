@@ -217,7 +217,8 @@ def getAccByvote_ds(model_2ed, test_data_dir, cfg, sess1_class_num=10):
         output = model_2ed.predict(imgs)
         output = tf.argmax(tf.transpose(output))
         for i in range(output.shape[0]):
-            mylabel = label[i].numpy()[0][0]
+            print(label[i])
+            mylabel = label[i].numpy()
             result[mylabel].append(int(output[i]))
 
     # print(result)
