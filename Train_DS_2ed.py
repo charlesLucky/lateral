@@ -77,7 +77,6 @@ def main(_):
                               training=True, cfg=cfg)
     # FREEZE_LAYERS = 145
     for layer in model.layers:
-        print('*1:',layer.name)
         if layer.name == 'arcface_model':
             layer.trainable = False
 
@@ -181,13 +180,8 @@ def main(_):
             epochs = steps // steps_per_epoch + 1
 
     print("[*] training done!")
-
-    # File_log_name = 'logs/multistage_Ids10Test_tent_vote.log'
-    # scores_session1, scores_session2, scores_session3, scores_session4 =  reportAccu_ds( cfg,model)
-    # printstr = f"stage: {FLAGS.stage}: {scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
-    # print(printstr)
-    # with open(File_log_name, encoding="utf-8", mode="a") as data:
-    #     data.write(printstr)
+    model.save_weights('checkpoints/{}/e_{}_b_{}.ckpt'.format(
+        cfg['sub_name'], epochs, steps % steps_per_epoch))
 
 
 if __name__ == '__main__':
