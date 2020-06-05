@@ -110,11 +110,17 @@ def main(_):
 
             cnt = cnt + 1
 
-    ds_path = './data/tmp_tent/test/SESSION2'
-    save_dir = './data/tmp_tent/train_sess2/'
-    renameDir(ds_path, save_dir)
+    # renameDir(ds_path, save_dir)
+    # renameDir('./data/tmp_tent/test/SESSION2', save_dir)
 
-    logging.info("load ms1m dataset.")
+    renameDir('./data/tmp_tent/test/SESSION1_LT', './data/stage2/SESSION1_LT/')
+    renameDir('./data/tmp_tent/test/SESSION2', './data/stage2/SESSION2/')
+    renameDir('./data/tmp_tent/test/SESSION3', './data/stage2/SESSION3/')
+    renameDir('./data/tmp_tent/test/SESSION4', './data/stage2/SESSION4/')
+
+    save_dir = './data/stage2/SESSION1_LT/'
+
+    logging.info("load dataset."+save_dir)
     dataset_len = cfg['num_samples']
     steps_per_epoch = dataset_len // cfg['batch_size']
 
@@ -175,25 +181,6 @@ def main(_):
 
             steps += 1
             epochs = steps // steps_per_epoch + 1
-    else:
-        model.compile(optimizer=optimizer, loss=loss_fn, metrics=['accuracy'])
-        mc_callback = ModelCheckpoint(
-            'checkpoints/' + cfg['sub_name'] + '/e_{epoch}_b_{batch}.ckpt',
-            save_freq=cfg['save_steps'] * cfg['batch_size'], verbose=1,
-            save_weights_only=True)
-
-        tb_callback = TensorBoard(log_dir='logs/',
-                                  update_freq=cfg['batch_size'] * 5,
-                                  profile_batch=0)
-        tb_callback._total_batches_seen = steps
-        tb_callback._samples_seen = steps * cfg['batch_size']
-        callbacks = [mc_callback, tb_callback]
-
-        model.fit(train_dataset,
-                  epochs=cfg['epochs'],
-                  callbacks=callbacks,
-                  steps_per_epoch=10000,
-                  initial_epoch=epochs - 1)
 
     print("[*] training done!")
 

@@ -365,3 +365,36 @@ def loadTrainDS(test_data_dir = './data/tmp_tent/train/SESSION1_LT',BATCH_SIZE=6
     dataset = dataset.prefetch(
         buffer_size=tf.data.experimental.AUTOTUNE)
     return dataset
+
+def loadTestDS(test_data_dir,BATCH_SIZE=64,cfg=None):
+    def get_label(file_path):
+      parts = tf.strings.split(file_path, '/')
+      label = tf.strings.to_number(parts[-2], out_type=tf.dtypes.int64)
+      return label
+    def _transform_images(is_ccrop=False, cfg=None):
+        def transform_images(x_train):
+            x_train = tf.image.resize(x_train, (cfg['input_size_w'] , cfg['input_size_h']))
+            # x_train = tf.image.random_crop(x_train, (cfg['input_size_w'], cfg['input_size_h'], 3))
+            x_train = tf.image.random_flip_left_right(x_train)
+            x_train = tf.image.random_saturation(x_train, 0.6, 1.4)
+            x_train = tf.image.random_brightness(x_train, 0.4)
+            x_train = x_train / 255
+            return x_train
+        return transform_images
+
+    def process_path(file_path):
+      label = get_label(file_path)
+    # load the raw data from the file as a string
+      image_encoded = tf.io.read_file(file_path)
+      img = tf.image.decode_jpeg(image_encoded, channels=3)
+      img = _transform_images(cfg=cfg)(img)
+      return img, label
+    list_ds = tf.data.Dataset.list_files(str(test_data_dir + '*/*')).cache()
+
+    # print(f"we have total {self.image_count} images in this folder")
+    # Set `num_parallel_calls` so multiple images are loaded/processed in parallel.
+    labeled_ds = list_ds.map(process_path, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+    dataset =labeled_ds.batch(BATCH_SIZE)
+    dataset = dataset.prefetch(
+        buffer_size=tf.data.experimental.AUTOTUNE)
+    return dataset
