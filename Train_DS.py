@@ -29,7 +29,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator, array_to_im
 import tqdm
 import pathlib
 from shutil import copy, rmtree, copytree, copy2
-
+import time
 flags.DEFINE_string('cfg_path', './configs/ResNet50_1st.yaml', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
 flags.DEFINE_enum('mode', 'eager_tf', ['fit', 'eager_tf'],
@@ -129,6 +129,8 @@ def main(_):
         train_dataset = iter(train_dataset)
 
         while epochs <= cfg['epochs']:
+            if steps % 5 == 0:
+                start = time.time()
             inputs, labels = next(train_dataset)
 
             with tf.GradientTape() as tape:
@@ -144,12 +146,13 @@ def main(_):
             optimizer.apply_gradients(zip(grads, model.trainable_variables))
 
             if steps % 5 == 0:
-                verb_str = "Epoch {}/{}: {}/{}, loss={:.2f}, lr={:.4f}, acc={:.4f}"
+                end = time.time()
+                verb_str = "Epoch {}/{}: {}/{}, loss={:.2f}, lr={:.4f}, acc={:.4f},time/step={:.2f}s, remaining-epoch={:.2f}min"
                 print(verb_str.format(epochs, cfg['epochs'],
                                       steps % steps_per_epoch,
                                       steps_per_epoch,
                                       total_loss.numpy(),
-                                      learning_rate.numpy(), correct.numpy()))
+                                      learning_rate.numpy(), correct.numpy(),end - start,(steps_per_epoch -(steps % steps_per_epoch)) * (end - start) /60.0))
 
                 with summary_writer.as_default():
                     tf.summary.scalar(
