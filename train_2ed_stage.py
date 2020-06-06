@@ -79,10 +79,10 @@ def main(_):
                          training=True, cfg=cfg)
 
     # FREEZE_LAYERS = 145
-    for layer in model.layers:
-        print('*1:',layer.name)
-        if layer.name == 'arcface_model':
-            layer.trainable = False
+    # for layer in model.layers:
+    #     print('*1:',layer.name)
+    #     if layer.name == 'arcface_model':
+    #         layer.trainable = False
 
     for x in model.trainable_weights:
         print("trainable:",x.name)
