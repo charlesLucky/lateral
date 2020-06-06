@@ -173,7 +173,7 @@ def main(_):
                 model.save_weights('checkpoints/{}/e_{}_b_{}.ckpt'.format(
                     cfg['sub_name'], epochs, steps % steps_per_epoch))
             if steps % steps_per_epoch == 0:
-                if correct>=0.9999:
+                if correct>=0.9988:
                     es_cnt = es_cnt+1
                 if es_cnt>5:
                     break;
