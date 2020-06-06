@@ -117,6 +117,8 @@ def main(_):
               callbacks=callbacks,
               initial_epoch=epochs - 1)
     print("[*] training done!")
+    model.save_weights('checkpoints/{}/e_{}}.ckpt'.format(
+        cfg['sub_name'], epochs))
 
     File_log_name = 'logs/multistage_Ids10Test_tent_vote.log'
     scores_session1, scores_session2, scores_session3, scores_session4 =  reportAccu( cfg['batch_size'], cfg['input_size_w'],
