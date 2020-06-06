@@ -117,7 +117,7 @@ def main(_):
               callbacks=callbacks,
               initial_epoch=epochs - 1)
     print("[*] training done!")
-    model.save_weights('checkpoints/{}/e_{}}.ckpt'.format(
+    model.save_weights('checkpoints/{}/e_{}.ckpt'.format(
         cfg['sub_name'], epochs))
 
     File_log_name = 'logs/multistage_Ids10Test_tent_vote.log'
