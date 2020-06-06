@@ -170,6 +170,7 @@ def main(_):
             #     model.save_weights('checkpoints/{}/e_{}_b_{}.ckpt'.format(
             #         cfg['sub_name'], epochs, steps % steps_per_epoch))
             if steps % steps_per_epoch == 0:
+                print('[*] save ckpt file!')
                 model.save_weights('checkpoints/{}/e_{}_b_{}.ckpt'.format(
                     cfg['sub_name'], epochs, steps % steps_per_epoch))
             if steps % steps_per_epoch == 0:
