@@ -162,13 +162,17 @@ def main(_):
                     tf.summary.scalar(
                         'loss/reg loss', reg_loss, step=steps)
                     tf.summary.scalar(
+                        'loss/acc', correct, step=steps)
+                    tf.summary.scalar(
                         'learning rate', optimizer.lr, step=steps)
 
-            if steps % cfg['save_steps'] == 0:
-                print('[*] save ckpt file!')
+            # if steps % cfg['save_steps'] == 0:
+            #     print('[*] save ckpt file!')
+            #     model.save_weights('checkpoints/{}/e_{}_b_{}.ckpt'.format(
+            #         cfg['sub_name'], epochs, steps % steps_per_epoch))
+            if steps % steps_per_epoch % 10== 0:
                 model.save_weights('checkpoints/{}/e_{}_b_{}.ckpt'.format(
                     cfg['sub_name'], epochs, steps % steps_per_epoch))
-
             steps += 1
             epochs = steps // steps_per_epoch + 1
 
