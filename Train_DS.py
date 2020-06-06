@@ -127,7 +127,7 @@ def main(_):
             './logs/' + cfg['sub_name'])
 
         train_dataset = iter(train_dataset)
-
+        es_cnt=0
         while epochs <= cfg['epochs']:
             if steps % 5 == 0:
                 start = time.time()
@@ -165,7 +165,6 @@ def main(_):
                         'loss/acc', correct, step=steps)
                     tf.summary.scalar(
                         'learning rate', optimizer.lr, step=steps)
-
             # if steps % cfg['save_steps'] == 0:
             #     print('[*] save ckpt file!')
             #     model.save_weights('checkpoints/{}/e_{}_b_{}.ckpt'.format(
@@ -173,6 +172,11 @@ def main(_):
             if steps % steps_per_epoch % 10== 0:
                 model.save_weights('checkpoints/{}/e_{}_b_{}.ckpt'.format(
                     cfg['sub_name'], epochs, steps % steps_per_epoch))
+            if steps % steps_per_epoch == 0:
+                if correct>=0.9999:
+                    es_cnt = es_cnt+1
+                if es_cnt>5:
+                    break;
             steps += 1
             epochs = steps // steps_per_epoch + 1
 
