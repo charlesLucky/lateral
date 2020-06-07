@@ -49,6 +49,7 @@ def main(_):
     dataset_path = ''
     output_path = ''
     if FLAGS.stage == '1':
+        print("[*] remark:",FLAGS.ds_remark)
         generateDataset(byIDorByImages=True,
                         train_weight=0.67,ds_remark =FLAGS.ds_remark)  # half as train and half as test  0.67-> 20 as train 10 as test
 
