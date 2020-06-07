@@ -123,7 +123,7 @@ def main(_):
     File_log_name = 'logs/multistage_Ids10Test_tent_vote.log'
     scores_session1, scores_session2, scores_session3, scores_session4 =  reportAccu( cfg['batch_size'], cfg['input_size_w'],
                                   cfg['input_size_h'], CLASS_NAMES, model)
-    printstr = f"stage: {FLAGS.stage}: {scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
+    printstr = f"stage:{cfg['backbone_type']} {FLAGS.stage} {scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
     print(printstr)
     with open(File_log_name, encoding="utf-8", mode="a") as data:
         data.write(printstr)
