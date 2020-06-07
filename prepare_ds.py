@@ -50,8 +50,8 @@ def main(_):
     output_path = ''
     if FLAGS.stage == '1':
         print("[*] remark:",FLAGS.ds_remark)
-        generateDataset(byIDorByImages=True,
-                        train_weight=0.67,ds_remark =FLAGS.ds_remark)  # half as train and half as test  0.67-> 20 as train 10 as test
+        generateDataset(FLAGS.ds_remark,byIDorByImages=True,
+                        train_weight=0.67)  # half as train and half as test  0.67-> 20 as train 10 as test
 
         # orig_path = './data/tmp_tent/train/'
         # SAVE_PATH = './data/tmp_tent/SESSION1_ST_AUGMENT'

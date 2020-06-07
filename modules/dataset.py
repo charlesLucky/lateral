@@ -83,7 +83,7 @@ def addPrefix(path,prefix):
 #byIDorByImages = args.byIDorByImages
 #train_weight = args.train_weight
 #print(byIDorByImages)
-def generateDataset(byIDorByImages=True,train_weight=0.5,train_dir_tent='data/tmp_tent/train/',ds_remark = 'SESSION_TENT_NEW',includeST=True, includeTentnAquaBoth=False):
+def generateDataset(ds_remark,byIDorByImages=True,train_weight=0.5,train_dir_tent='data/tmp_tent/train/',includeST=True, includeTentnAquaBoth=False):
     test_dir_tent = 'data/tmp_tent/test/'
 
     # remove any file exist
