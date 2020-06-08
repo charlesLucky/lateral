@@ -34,6 +34,7 @@ flags.DEFINE_string('cfg_path', './configs/ResNet50_1st.yaml', 'config file path
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
 flags.DEFINE_enum('mode', 'eager_tf', ['fit', 'eager_tf'],
                   'fit: model.fit, eager_tf: custom GradientTape')
+flags.DEFINE_integer('batch_size', 64, 'batch size')
 
 gpus = tf.config.experimental.list_physical_devices('GPU')
 print("Num GPUs Available: ", len(gpus))
@@ -68,6 +69,7 @@ def main(_):
                          training=True, cfg=cfg)
     model.summary(line_length=80)
 
+    batch_size = FLAGS.batch_size
     if cfg['train_dataset']:
         def check_folder(dir_name):
             if not os.path.exists(dir_name):
@@ -97,9 +99,9 @@ def main(_):
 
         logging.info("load ms1m dataset.")
         dataset_len = cfg['num_samples']
-        steps_per_epoch = dataset_len // cfg['batch_size']
+        steps_per_epoch = dataset_len // batch_size
 
-        train_dataset = loadTrainDS(save_dir, BATCH_SIZE=cfg['batch_size'], cfg=cfg)
+        train_dataset = loadTrainDS(save_dir, BATCH_SIZE=batch_size, cfg=cfg)
 
     else:
         logging.info("load fake dataset.")
@@ -140,7 +142,7 @@ def main(_):
                 pred_loss = loss_fn(labels, logist) * 10
                 total_loss = pred_loss + reg_loss
                 output = tf.argmax(tf.transpose(logist))
-                correct = tf.shape(tf.where([output == labels]))[0] / cfg['batch_size']
+                correct = tf.shape(tf.where([output == labels]))[0] / batch_size
 
             grads = tape.gradient(total_loss, model.trainable_variables)
             optimizer.apply_gradients(zip(grads, model.trainable_variables))

@@ -131,7 +131,7 @@ def getMDCM(input_shape=None, name="Multi-scale-Dilated"):
     x = MaxPooling2D(pool_size=(2, 2))(x)
     x = Dropout(0.5)(x)
     x = Flatten()(x)
-    output = Dense(512, kernel_regularizer=regularizers.l2(weight_decay), activation='sigmoid')(x)
+    output = Dense(512, kernel_regularizer=regularizers.l2(weight_decay))(x)
     model = Model(inputs=img_x, outputs=output, name=name)
     print(model.summary())
     return model

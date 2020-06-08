@@ -76,7 +76,7 @@ def NormHead(num_classes, w_decay=5e-4, name='NormHead'):
     """Norm Head"""
     def norm_head(x_in):
         x = inputs = Input(x_in.shape[1:])
-        x = Dense(num_classes, kernel_regularizer=_regularizer(w_decay))(x)
+        x = Dense(num_classes, kernel_regularizer=_regularizer(w_decay), activation='sigmoid')(x)
         return Model(inputs, x, name=name)(x_in)
     return norm_head
 
@@ -99,7 +99,7 @@ def ArcFaceModel(channels=3, num_classes=None, name='arcface_model',
         return Model(inputs, embds, name=name)
 
 
-def FishModel(channels=3, num_classes=None, name='arcface_model',
+def FishModel(channels=3, num_classes=None, name='fish_model',
                  margin=0.5, logist_scale=64, embd_shape=512,
                  head_type='ArcHead', backbone_type='ResNet50',
                  w_decay=5e-4, use_pretrain=True, training=False,cfg=None):

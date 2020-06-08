@@ -20,6 +20,7 @@ flags.DEFINE_string('epochs', '1', 'which epoch to start')
 flags.DEFINE_string('stage', '2', 'which stage to start')
 flags.DEFINE_enum('mode', 'fit', ['fit', 'eager_tf'],
                   'fit: model.fit, eager_tf: custom GradientTape')
+flags.DEFINE_integer('batch_size', 64, 'batch size')
 
 gpus = tf.config.experimental.list_physical_devices('GPU')
 print("Num GPUs Available: ", len(gpus))
@@ -64,7 +65,7 @@ def main(_):
 
     CLASS_NAMES = None
     SPLIT_WEIGHTS = (0.9, 0.1, 0.0)  # train cv val vs test
-    myloadData = LoadFishDataUtil('./data/tmp_tent/test/SESSION_LT_AUGMENT', cfg['batch_size'], cfg['input_size_w'], cfg['input_size_h'],
+    myloadData = LoadFishDataUtil('./data/tmp_tent/test/SESSION_LT_AUGMENT', FLAGS.batch_size, cfg['input_size_w'], cfg['input_size_h'],
                                   CLASS_NAMES, SPLIT_WEIGHTS)
     train_dataset, val_dataset, test_dataset, STEPS_PER_EPOCH, CLASS_NAMES, class_num = myloadData.loadFishData()
     print(f'total class:{class_num}')
@@ -98,15 +99,15 @@ def main(_):
     model.compile(optimizer=optimizer, loss=loss_fn,metrics=['accuracy'])
 
     mc_callback = ModelCheckpoint(
-        'checkpoints/' + cfg['sub_name'] + '/e_{epoch}.ckpt',#save_freq=cfg['save_steps'] * cfg['batch_size'],
+        'checkpoints/' + cfg['sub_name'] + '/e_{epoch}.ckpt',#save_freq=cfg['save_steps'] * FLAGS.batch_size,
          verbose=1, monitor='loss', save_best_only=True,
         save_weights_only=True)
 
     tb_callback = TensorBoard(log_dir='logs/',
-                              update_freq=cfg['batch_size'] * 5,
+                              update_freq=FLAGS.batch_size * 5,
                               profile_batch=0)
     tb_callback._total_batches_seen = steps
-    tb_callback._samples_seen = steps * cfg['batch_size']
+    tb_callback._samples_seen = steps * FLAGS.batch_size
 
     es = EarlyStopping(monitor='accuracy', mode='max', verbose=1, patience=3)
 
@@ -121,7 +122,7 @@ def main(_):
         cfg['sub_name'], epochs))
 
     File_log_name = 'logs/multistage_Ids10Test_tent_vote.log'
-    scores_session1, scores_session2, scores_session3, scores_session4 =  reportAccu( cfg['batch_size'], cfg['input_size_w'],
+    scores_session1, scores_session2, scores_session3, scores_session4 =  reportAccu( FLAGS.batch_size, cfg['input_size_w'],
                                   cfg['input_size_h'], CLASS_NAMES, model)
     printstr = f"stage:{cfg['backbone_type']} {FLAGS.stage} {scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
     print(printstr)

@@ -8,10 +8,9 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator, array_to_im
 import tqdm
 import json
 
-directory_str_tent = 'data/SESSION_TENT_NEW/SESSION1_LT'
-directory_str_aqua = 'data/SESSION_AQUARIUM/SESSION1_LT'
-ST_DIR_TENT = 'data/SESSION_TENT_NEW/SESSION1_ST/'
-ST_DIR_AQUA = 'data/SESSION_AQUARIUM/SESSION1_ST/'
+# directory_str_tent = 'data/SESSION_TENT_NEW/SESSION1_LT'
+# directory_str_aqua = 'data/SESSION_AQUARIUM/SESSION1_LT'
+# ST_DIR_AQUA = 'data/SESSION_AQUARIUM/SESSION1_ST/'
 
 def _parse_tfrecord(binary_img=False, is_ccrop=False,cfg=None):
     def parse_tfrecord(tfrecord):
@@ -85,7 +84,8 @@ def addPrefix(path,prefix):
 #print(byIDorByImages)
 def generateDataset(ds_remark,byIDorByImages=True,train_weight=0.5,train_dir_tent='data/tmp_tent/train/',includeST=True, includeTentnAquaBoth=False):
     test_dir_tent = 'data/tmp_tent/test/'
-
+    ST_DIR_TENT = 'data/'+ds_remark+'/SESSION1_ST/'
+    directory_str_tent = 'data/'+ST_DIR_TENT+'/SESSION1_LT'
     # remove any file exist
     if os.path.exists(train_dir_tent):
         rmtree(train_dir_tent)
@@ -328,7 +328,7 @@ def loadTestDS(test_data_dir = './data/tmp_tent/test/SESSION1_LT',BATCH_SIZE=64,
     return dataset
 
 
-def loadTrainDS(test_data_dir = './data/tmp_tent/train/SESSION1_LT',BATCH_SIZE=64,cfg=None):
+def loadTrainDS(test_data_dir,BATCH_SIZE=64,cfg=None):
     def get_label(file_path):
       parts = tf.strings.split(file_path, '/')
       label = tf.strings.to_number(parts[-2], out_type=tf.dtypes.int64)
