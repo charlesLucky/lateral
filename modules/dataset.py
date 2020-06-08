@@ -85,7 +85,7 @@ def addPrefix(path,prefix):
 def generateDataset(ds_remark,byIDorByImages=True,train_weight=0.5,train_dir_tent='data/tmp_tent/train/',includeST=True, includeTentnAquaBoth=False):
     test_dir_tent = 'data/tmp_tent/test/'
     ST_DIR_TENT = 'data/'+ds_remark+'/SESSION1_ST/'
-    directory_str_tent = 'data/'+ST_DIR_TENT+'/SESSION1_LT'
+    directory_str_tent = 'data/'+ds_remark+'/SESSION1_LT'
     # remove any file exist
     if os.path.exists(train_dir_tent):
         rmtree(train_dir_tent)
