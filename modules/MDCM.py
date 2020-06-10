@@ -31,6 +31,7 @@ def getMDCM(input_shape=None, kernal_size = None, name="Multi-scale-Dilated"):
     weight_decay = 5e-4
     img_x = Input(shape=input_shape)
     # kernal_size = (5,3)
+    print('[******] user kernel size:',kernal_size)
 
     x = Conv2D(16, kernal_size, padding='same', activation='relu', kernel_regularizer=regularizers.l2(weight_decay))(img_x)
     x = BatchNormalization()(x)
@@ -132,7 +133,7 @@ def getMDCM(input_shape=None, kernal_size = None, name="Multi-scale-Dilated"):
     x = Flatten()(x)
     output = Dense(512, kernel_regularizer=regularizers.l2(weight_decay))(x)
     model = Model(inputs=img_x, outputs=output, name=name)
-    print(model.summary())
+    # print(model.summary())
     return model
 
 class MDCM(keras.layers.Layer):
