@@ -56,6 +56,7 @@ def main(_):
                                   CLASS_NAMES, SPLIT_WEIGHTS)
     train_dataset, val_dataset, test_dataset, STEPS_PER_EPOCH, CLASS_NAMES, class_num = myloadData.loadFishData()
     print(f'total class:{class_num}')
+    steps_per_epoch = cfg['num_samples'] //  FLAGS.batch_size
 
     epochs, steps = int(FLAGS.epochs), 1
 
@@ -65,6 +66,16 @@ def main(_):
                          embd_shape=cfg['embd_shape'],
                          w_decay=cfg['w_decay'],
                          training=True, cfg=cfg)
+
+    ckpt_path = tf.train.latest_checkpoint('./checkpoints/' + cfg['sub_name'])
+    if ckpt_path is not None:
+        print("[*] load ckpt from {}".format(ckpt_path))
+        model.load_weights(ckpt_path)
+        epochs, steps = get_ckpt_inf(ckpt_path, steps_per_epoch)
+    else:
+        print("[*] training from scratch.")
+        epochs, steps = 1, 1
+
 
     # FREEZE_LAYERS = 145
     # for layer in model.layers:
