@@ -27,10 +27,9 @@ Multi-scale Dilated Convolution module
  filters, kernel_size, strides=(1, 1), padding='valid'
 '''
 
-def getMDCM(input_shape=None, name="Multi-scale-Dilated"):
+def getMDCM(input_shape=None, kernal_size = None, name="Multi-scale-Dilated"):
     weight_decay = 5e-4
     img_x = Input(shape=input_shape)
-    kernal_size = (3,3)
     # kernal_size = (5,3)
 
     x = Conv2D(16, kernal_size, padding='same', activation='relu', kernel_regularizer=regularizers.l2(weight_decay))(img_x)
@@ -138,9 +137,9 @@ def getMDCM(input_shape=None, name="Multi-scale-Dilated"):
 
 class MDCM(keras.layers.Layer):
 
-  def __init__(self, input_shape=(112,112,3)):
+  def __init__(self, input_shape=(112,112,3),kernal_size=(3,3)):
     super(MDCM, self).__init__()
-    self.model = getMDCM(input_shape)
+    self.model = getMDCM(input_shape,kernal_size)
 
   def call(self, inputs):
     return self.model(inputs)

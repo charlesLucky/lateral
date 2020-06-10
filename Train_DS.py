@@ -41,7 +41,6 @@ flags.DEFINE_integer('batch_size', 64, 'batch size')
 def main(_):
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
-    set_memory_growth()
 
     logger = tf.get_logger()
     logger.disabled = True
