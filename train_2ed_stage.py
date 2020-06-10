@@ -71,7 +71,7 @@ def main(_):
     if ckpt_path is not None:
         print("[*] load ckpt from {}".format(ckpt_path))
         model.load_weights(ckpt_path)
-        epochs, steps = get_ckpt_inf2(ckpt_path, steps_per_epoch)
+        epochs, steps = get_ckpt_inf2(ckpt_path)
     else:
         print("[*] training from scratch.")
         epochs, steps = 1, 1
