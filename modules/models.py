@@ -45,7 +45,7 @@ def Backbone(backbone_type='ResNet50', use_pretrain=True):
         elif backbone_type == 'MDCM':
             return MDCM(input_shape=x_in.shape[1:],kernal_size=(3,3))(x_in)
         elif backbone_type == 'MDCMrect':
-            return MDCM(input_shape=x_in.shape[1:],kernal_size=(4,2))(x_in)
+            return MDCM(input_shape=x_in.shape[1:],kernal_size=(5,2))(x_in)
         else:
             raise TypeError('backbone_type error!')
     return backbone
