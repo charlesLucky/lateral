@@ -46,6 +46,14 @@ def get_ckpt_inf(ckpt_path, steps_per_epoch):
     return epochs, steps + 1
 
 
+
+def get_ckpt_inf2(ckpt_path):
+    """get ckpt information"""
+    split_list = ckpt_path.split('e_')[-1].split('.')
+    epochs = int(split_list[0])
+    return epochs,  1
+
+
 def l2_norm(x, axis=1):
     """l2 norm"""
     norm = np.linalg.norm(x, axis=axis, keepdims=True)
