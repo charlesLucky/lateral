@@ -71,7 +71,7 @@ def OutputLayer(embd_shape, w_decay=5e-4, name='OutputLayer'):
     return output_layer
 
 
-def OutputLayerRNN(embd_shape, w_decay=5e-4, name='OutputLayer'):
+def OutputLayerRNN(embd_shape, w_decay=5e-4, name='OutputLayerRNN'):
     """Output Later"""
 
     def output_layer(x_in):
