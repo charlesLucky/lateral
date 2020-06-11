@@ -107,7 +107,7 @@ def main(_):
     tb_callback._total_batches_seen = steps
     tb_callback._samples_seen = steps * FLAGS.batch_size
 
-    es = EarlyStopping(monitor='accuracy', mode='max', verbose=1, patience=3)
+    es = EarlyStopping(monitor='loss', mode='min', verbose=1, patience=3)
 
     callbacks = [mc_callback, tb_callback,es]
 
