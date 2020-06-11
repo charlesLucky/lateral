@@ -9,7 +9,7 @@ sub_name: 'MDCM_1st'
 backbone_type: 'MDCM' # 'ResNet50', 'MobileNetV2' VGG16
 head_type: NormHead # 'ArcHead', 'NormHead'
 is_ccrop: True # central-cropping or not
-
+rnn: False
 # train
 # url https://www.dropbox.com/s/9w1hb95t5ty8te7/tent_300_bin.tfrecord?dl=0
 train_dataset: './data/New_ROI_STLT_bin.tfrecord'

@@ -10,7 +10,7 @@ sub_name: 'VGG19_onestage'
 backbone_type: 'VGG19' # 'ResNet50', 'MobileNetV2' VGG16
 head_type: NormHead # 'ArcHead', 'NormHead'
 is_ccrop: True # central-cropping or not
-
+rnn: False
 # train
 # url https://www.dropbox.com/s/9w1hb95t5ty8te7/tent_300_bin.tfrecord?dl=0
 train_dataset: './data/tent_300_bin.tfrecord'

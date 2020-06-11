@@ -5,6 +5,9 @@ from tensorflow.keras.layers import (
     Dropout,
     Flatten,
     Input,
+    GRU,
+    SimpleRNN,
+    concatenate
 )
 from tensorflow.keras.applications import (
     MobileNetV2,
@@ -43,16 +46,18 @@ def Backbone(backbone_type='ResNet50', use_pretrain=True):
             return VGG19(input_shape=x_in.shape[1:], include_top=False,
                          weights=weights)(x_in)
         elif backbone_type == 'MDCM':
-            return MDCM(input_shape=x_in.shape[1:],kernal_size=(3,3))(x_in)
+            return MDCM(input_shape=x_in.shape[1:], kernal_size=(3, 3))(x_in)
         elif backbone_type == 'MDCMrect':
-            return MDCM(input_shape=x_in.shape[1:],kernal_size=(5,2))(x_in)
+            return MDCM(input_shape=x_in.shape[1:], kernal_size=(5, 2))(x_in)
         else:
             raise TypeError('backbone_type error!')
+
     return backbone
 
 
 def OutputLayer(embd_shape, w_decay=5e-4, name='OutputLayer'):
     """Output Later"""
+
     def output_layer(x_in):
         x = inputs = Input(x_in.shape[1:])
         x = BatchNormalization()(x)
@@ -61,10 +66,30 @@ def OutputLayer(embd_shape, w_decay=5e-4, name='OutputLayer'):
         x = Dense(embd_shape, kernel_regularizer=_regularizer(w_decay))(x)
         x = BatchNormalization()(x)
         return Model(inputs, x, name=name)(x_in)
+
     return output_layer
+
+
+def OutputLayerRNN(embd_shape, w_decay=5e-4, name='OutputLayer'):
+    """Output Later"""
+
+    def output_layer(x_in):
+        x = inputs = Input(x_in.shape[1:])
+        model = tf.keras.Sequential()
+        x = BatchNormalization()(x)
+        x = Dropout(rate=0.5)(x)
+        x = Flatten()(x)
+        x = GRU(512, return_sequences=False)(x)
+        x = SimpleRNN(256)(x)
+        x = Dense(embd_shape, kernel_regularizer=_regularizer(w_decay))(x)
+        return Model(inputs, x, name=name)(x_in)
+
+    return output_layer
+
 
 def ArcHead(num_classes, margin=0.5, logist_scale=64, name='ArcHead'):
     """Arc Head"""
+
     def arc_head(x_in, y_in):
         x = inputs1 = Input(x_in.shape[1:])
         y = Input(y_in.shape[1:])
@@ -72,27 +97,37 @@ def ArcHead(num_classes, margin=0.5, logist_scale=64, name='ArcHead'):
                                     margin=margin,
                                     logist_scale=logist_scale)(x, y)
         return Model((inputs1, y), x, name=name)((x_in, y_in))
+
     return arc_head
+
 
 def NormHead(num_classes, w_decay=5e-4, name='NormHead'):
     """Norm Head"""
+
     def norm_head(x_in):
         x = inputs = Input(x_in.shape[1:])
         x = Dense(num_classes, kernel_regularizer=_regularizer(w_decay), activation='sigmoid')(x)
         return Model(inputs, x, name=name)(x_in)
+
     return norm_head
 
 
 def ArcFaceModel(channels=3, num_classes=None, name='arcface_model',
                  margin=0.5, logist_scale=64, embd_shape=512,
                  head_type='ArcHead', backbone_type='ResNet50',
-                 w_decay=5e-4, use_pretrain=True, training=False,cfg=None):
+                 w_decay=5e-4, use_pretrain=True, training=False, cfg=None):
     """Arc Face Model"""
     x = inputs = Input([cfg['input_size_w'], cfg['input_size_h'], channels], name='input_image')
 
     x = Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain)(x)
 
-    embds = OutputLayer(embd_shape, w_decay=w_decay)(x)
+    if cfg['rnn']:
+        embds1 = OutputLayer(embd_shape, w_decay=w_decay)(x)
+        embds2 = OutputLayerRNN(embd_shape, w_decay=w_decay)(x)
+        embds = concatenate([embds1, embds2])
+    else:
+        embds = OutputLayer(embd_shape, w_decay=w_decay)(x)
+
     if training:
         assert num_classes is not None
         logist = NormHead(num_classes=num_classes, w_decay=w_decay)(embds)
@@ -102,9 +137,9 @@ def ArcFaceModel(channels=3, num_classes=None, name='arcface_model',
 
 
 def FishModel(channels=3, num_classes=None, name='fish_model',
-                 margin=0.5, logist_scale=64, embd_shape=512,
-                 head_type='ArcHead', backbone_type='ResNet50',
-                 w_decay=5e-4, use_pretrain=True, training=False,cfg=None):
+              margin=0.5, logist_scale=64, embd_shape=512,
+              head_type='ArcHead', backbone_type='ResNet50',
+              w_decay=5e-4, use_pretrain=True, training=False, cfg=None):
     """Arc Face Model"""
     x = inputs = Input([cfg['input_size_w'], cfg['input_size_h'], channels], name='input_image')
     x = Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain)(x)
@@ -112,10 +147,11 @@ def FishModel(channels=3, num_classes=None, name='fish_model',
     logist = NormHead(num_classes=num_classes, w_decay=w_decay)(embds)
     return Model(inputs, logist, name=name)
 
-def ArcFishStackModel(basemodel = None,channels=3, num_classes=None, name='arcface_model',
-                 margin=0.5, logist_scale=64, embd_shape=512,
-                 head_type='ArcHead',
-                 w_decay=5e-4, use_pretrain=True, training=False,cfg=None):
+
+def ArcFishStackModel(basemodel=None, channels=3, num_classes=None, name='arcface_model',
+                      margin=0.5, logist_scale=64, embd_shape=512,
+                      head_type='ArcHead',
+                      w_decay=5e-4, use_pretrain=True, training=False, cfg=None):
     """Arc Face Model"""
     x = inputs = Input([cfg['input_size_w'], cfg['input_size_h'], channels], name='input_image')
     embds = basemodel(x)
@@ -126,8 +162,3 @@ def ArcFishStackModel(basemodel = None,channels=3, num_classes=None, name='arcfa
     x = Dense(256, kernel_regularizer=_regularizer(w_decay))(x)
     logist = NormHead(num_classes=num_classes, w_decay=w_decay)(x)
     return Model(inputs, logist, name=name)
-
-
-
-
-
