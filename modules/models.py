@@ -7,6 +7,7 @@ from tensorflow.keras.layers import (
     Input,
     GRU,
     SimpleRNN,
+    Embedding,
     concatenate
 )
 from tensorflow.keras.applications import (
@@ -79,6 +80,7 @@ def OutputLayerRNN(embd_shape, w_decay=5e-4, name='OutputLayer'):
         x = BatchNormalization()(x)
         x = Dropout(rate=0.5)(x)
         x = Flatten()(x)
+        x = Embedding(input_dim=512, output_dim=64) (x)
         x = GRU(512, return_sequences=False)(x)
         x = SimpleRNN(256)(x)
         x = Dense(embd_shape, kernel_regularizer=_regularizer(w_decay))(x)
