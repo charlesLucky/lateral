@@ -71,7 +71,7 @@ def main(_):
         if layer.name == 'arcface_model':
             layer.trainable = False
 
-    ckpt_path = tf.train.latest_checkpoint('./checkpoints/' + cfg['sub_name'])
+    ckpt_path = tf.train.latest_checkpoint('./checkpoints222/' + cfg['sub_name'])
     if ckpt_path is not None:
         print("[*] load ckpt from {}".format(ckpt_path))
         model.load_weights(ckpt_path)
