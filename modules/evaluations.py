@@ -240,12 +240,12 @@ def getAccByvote_ds(model_2ed, test_data_dir, cfg, sess1_class_num=10):
         lst = result[i]
         modeval = most_frequent(lst)
         # modeval = [x for x in set(lst) if lst.count(x) > 1]
-        if (len(modeval)>0):
-            modeval = modeval[0]
-            final[i] = modeval
-        else:
-            modeval = -9
-            final[i] = modeval
+        # if (len(modeval)>0):
+        #     modeval = modeval[0]
+        #     final[i] = modeval
+        # else:
+        #     modeval = -9
+        #     final[i] = modeval
         # print(i,lst,modeval)
         if i == modeval:
             correct = correct + 1
