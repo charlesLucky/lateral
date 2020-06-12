@@ -20,7 +20,7 @@ from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 
 from modules.models import ArcFaceModel,ArcFishStackModel
 from modules.losses import SoftmaxLoss
-from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf,generatePermKey
+from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf2,generatePermKey
 
 from modules.dataset  import loadTrainDS
 from modules.evaluations import reportAccu_ds
@@ -69,6 +69,15 @@ def main(_):
         if layer.name == 'arcface_model':
             layer.trainable = False
 
+    ckpt_path = tf.train.latest_checkpoint('./checkpoints/' + cfg['sub_name'])
+    if ckpt_path is not None:
+        print("[*] load ckpt from {}".format(ckpt_path))
+        model.load_weights(ckpt_path)
+        epochs, steps = get_ckpt_inf2(ckpt_path)
+    else:
+        print("[*] training from scratch.")
+        epochs, steps = 1, 1
+
     for x in model.trainable_weights:
         print("trainable:",x.name)
     print('\n')
@@ -112,7 +121,6 @@ def main(_):
 
     train_dataset = loadTrainDS(save_dir, BATCH_SIZE=cfg['batch_size'], cfg=cfg)
 
-    epochs, steps = 1, 1
     learning_rate = tf.constant(cfg['base_lr'])
     optimizer = tf.keras.optimizers.SGD(
         learning_rate=learning_rate, momentum=0.9, nesterov=True)
