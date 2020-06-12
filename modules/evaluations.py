@@ -204,6 +204,17 @@ def reportAccu_ds(cfg, model_2ed):
     return scores_session1, scores_session2, scores_session3, scores_session4
 
 
+def most_frequent(List):
+    counter = 0
+    num = List[0]
+
+    for i in List:
+        curr_frequency = List.count(i)
+        if (curr_frequency > counter):
+            counter = curr_frequency
+            num = i
+
+    return num
 
 def getAccByvote_ds(model_2ed, test_data_dir, cfg, sess1_class_num=10):
     sess1_test_dataset = loadTestDS(test_data_dir, BATCH_SIZE=cfg['batch_size'], cfg=cfg)
@@ -227,7 +238,8 @@ def getAccByvote_ds(model_2ed, test_data_dir, cfg, sess1_class_num=10):
     correct = 0
     for i in result.keys():
         lst = result[i]
-        modeval = [x for x in set(lst) if lst.count(x) > 1]
+        modeval = most_frequent(lst)
+        # modeval = [x for x in set(lst) if lst.count(x) > 1]
         if (len(modeval)>0):
             modeval = modeval[0]
             final[i] = modeval
