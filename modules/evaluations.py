@@ -245,7 +245,7 @@ def getAccByvote_ds(model_2ed, test_data_dir, cfg, sess1_class_num=10):
         #     final[i] = modeval
         # else:
         #     modeval = -9
-        #     final[i] = modeval
+        final[i] = modeval
         # print(i,lst,modeval)
         if i == modeval:
             correct = correct + 1
