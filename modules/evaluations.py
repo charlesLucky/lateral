@@ -228,7 +228,7 @@ def getAccByvote_ds(model_2ed, test_data_dir, cfg, sess1_class_num=10):
     for i in result.keys():
         lst = result[i]
         modeval = [x for x in set(lst) if lst.count(x) > 1]
-        if (len(modeval)>=0):
+        if (len(modeval)>0):
             modeval = modeval[0]
             final[i] = modeval
         else:
