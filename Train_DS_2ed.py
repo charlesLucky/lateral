@@ -32,7 +32,7 @@ flags.DEFINE_string('cfg_path', './configs/ResNet50_1st.yaml', 'config file path
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
 flags.DEFINE_enum('mode', 'eager_tf', ['fit', 'eager_tf'],
                   'fit: model.fit, eager_tf: custom GradientTape')
-flags.DEFINE_string('stage', '2', 'which stage to start')
+flags.DEFINE_integer('stage', 2, 'which stage to start')
 flags.DEFINE_integer('batch_size', 64, 'batch size')
 
 
@@ -115,7 +115,7 @@ def main(_):
     renameDir('./data/tmp_tent/test/SESSION3', './data/stage2/SESSION3/')
     renameDir('./data/tmp_tent/test/SESSION4', './data/stage2/SESSION4/')
 
-    if FLAGS.stage==2:
+    if FLAGS.stage == 2:
         save_dir = './data/stage2/SESSION1_LT/'
     elif FLAGS.stage==3:
         save_dir = './data/stage2/SESSION2/'
