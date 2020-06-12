@@ -32,6 +32,7 @@ flags.DEFINE_string('cfg_path', './configs/ResNet50_1st.yaml', 'config file path
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
 flags.DEFINE_enum('mode', 'eager_tf', ['fit', 'eager_tf'],
                   'fit: model.fit, eager_tf: custom GradientTape')
+flags.DEFINE_string('stage', '2', 'which stage to start')
 
 
 def main(_):
