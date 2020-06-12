@@ -113,7 +113,12 @@ def main(_):
     renameDir('./data/tmp_tent/test/SESSION3', './data/stage2/SESSION3/')
     renameDir('./data/tmp_tent/test/SESSION4', './data/stage2/SESSION4/')
 
-    save_dir = './data/stage2/SESSION1_LT/'
+    if FLAGS.stage==2:
+        save_dir = './data/stage2/SESSION1_LT/'
+    elif FLAGS.stage==3:
+        save_dir = './data/stage2/SESSION2/'
+    elif FLAGS.stage==4:
+        save_dir = './data/stage2/SESSION3/'
 
     logging.info("load dataset."+save_dir)
     dataset_len = cfg['num_samples']
