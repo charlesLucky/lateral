@@ -20,7 +20,7 @@ from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 
 from modules.models import ArcFaceModel,ArcFishStackModel
 from modules.losses import SoftmaxLoss
-from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf2,generatePermKey
+from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf2,generatePermKey,get_ckpt_inf3
 
 from modules.dataset  import loadTrainDS
 from modules.evaluations import reportAccu_ds
@@ -73,7 +73,7 @@ def main(_):
     if ckpt_path is not None:
         print("[*] load ckpt from {}".format(ckpt_path))
         model.load_weights(ckpt_path)
-        epochs, steps = get_ckpt_inf2(ckpt_path)
+        epochs, steps = get_ckpt_inf3(ckpt_path)
     else:
         print("[*] training from scratch.")
         epochs, steps = 1, 1
