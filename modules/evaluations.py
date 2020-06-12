@@ -216,8 +216,8 @@ def getAccByvote_ds(model_2ed, test_data_dir, cfg, sess1_class_num=10):
         imgs, label = next(ds_it)
         output = model_2ed.predict(imgs)
         output = tf.argmax(tf.transpose(output))
-        print('[***]output',output)
-        print('[***]label',label)
+        # print('[***]output',output)
+        # print('[***]label',label)
         for i in range(output.shape[0]):
             mylabel = label[i].numpy()
             result[mylabel].append(int(output[i]))
@@ -228,13 +228,13 @@ def getAccByvote_ds(model_2ed, test_data_dir, cfg, sess1_class_num=10):
     for i in result.keys():
         lst = result[i]
         modeval = [x for x in set(lst) if lst.count(x) > 1]
-        if (len(modeval)>0):
+        if (len(modeval)>=0):
             modeval = modeval[0]
             final[i] = modeval
         else:
             modeval = -9
             final[i] = modeval
-
+        # print(i,lst,modeval)
         if i == modeval:
             correct = correct + 1
     return correct / sess1_class_num
