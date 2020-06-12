@@ -171,6 +171,12 @@ def main(_):
     model.save_weights('checkpoints/{}/e_{}_b_{}.ckpt'.format(
         cfg['sub_name'], epochs, steps % steps_per_epoch))
 
+    File_log_name = 'logs/multistage_Ids10Test_tent_vote2.log'
+    scores_session1, scores_session2, scores_session3, scores_session4 =  reportAccu_ds(cfg, model)
+    printstr = f"stage:{cfg['backbone_type']} {FLAGS.stage} {scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
+    print(printstr)
+    with open(File_log_name, encoding="utf-8", mode="a") as data:
+        data.write(printstr)
 
 if __name__ == '__main__':
     app.run(main)
