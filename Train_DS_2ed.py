@@ -33,6 +33,7 @@ flags.DEFINE_string('gpu', '0', 'which gpu to use')
 flags.DEFINE_enum('mode', 'eager_tf', ['fit', 'eager_tf'],
                   'fit: model.fit, eager_tf: custom GradientTape')
 flags.DEFINE_string('stage', '2', 'which stage to start')
+flags.DEFINE_integer('batch_size', 64, 'batch size')
 
 
 def main(_):
@@ -45,6 +46,7 @@ def main(_):
     set_memory_growth()
 
     cfg = load_yaml(FLAGS.cfg_path)
+    batch_size = FLAGS.batch_size
 
     basemodel = ArcFaceModel(backbone_type=cfg['backbone_type'],
                              num_classes=cfg['num_classes'],
@@ -122,9 +124,9 @@ def main(_):
 
     logging.info("load dataset."+save_dir)
     dataset_len = cfg['num_samples']
-    steps_per_epoch = dataset_len // cfg['batch_size']
+    steps_per_epoch = dataset_len // batch_size
 
-    train_dataset = loadTrainDS(save_dir, BATCH_SIZE=cfg['batch_size'], cfg=cfg)
+    train_dataset = loadTrainDS(save_dir, BATCH_SIZE=batch_size, cfg=cfg)
 
     learning_rate = tf.constant(cfg['base_lr'])
     optimizer = tf.keras.optimizers.SGD(
@@ -150,7 +152,7 @@ def main(_):
                 pred_loss = loss_fn(labels, logist)* 10
                 total_loss = pred_loss + reg_loss
                 output = tf.argmax(tf.transpose(logist))
-                correct = tf.shape(tf.where([output == labels]))[0] / cfg['batch_size']
+                correct = tf.shape(tf.where([output == labels]))[0] / batch_size
 
             grads = tape.gradient(total_loss, model.trainable_variables)
             optimizer.apply_gradients(zip(grads, model.trainable_variables))
