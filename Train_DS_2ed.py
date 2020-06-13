@@ -132,7 +132,7 @@ def main(_):
     optimizer = tf.keras.optimizers.SGD(
         learning_rate=learning_rate, momentum=0.9, nesterov=True)
     # loss_fn = SoftmaxLoss()
-    loss_fn = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
+    loss_fn = tf.keras.losses.CategoricalCrossentropy()#from_logits=True
 
     if FLAGS.mode == 'eager_tf':
         # Eager mode is great for debugging
