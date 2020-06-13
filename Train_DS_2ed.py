@@ -22,7 +22,7 @@ from modules.models import ArcFaceModel,ArcFishStackModel
 from modules.losses import SoftmaxLoss
 from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf2,generatePermKey,get_ckpt_inf3
 
-from modules.dataset  import loadTrainDS
+from modules.dataset  import loadTrainDS,getfilelist
 from modules.evaluations import reportAccu_ds
 import tqdm
 import pathlib
@@ -128,7 +128,10 @@ def main(_):
 
 
     train_dataset = loadTrainDS(save_dir, BATCH_SIZE=batch_size, cfg=cfg)
-    num_elements = tf.data.experimental.cardinality(train_dataset).numpy()
+    alllist = getfilelist(save_dir)
+    num_imgs = len(alllist)
+    print('total number of images:', num_imgs)
+    num_elements = num_imgs
     # dataset_len = cfg['num_samples']
     dataset_len = num_elements
     steps_per_epoch = dataset_len // batch_size
