@@ -67,9 +67,9 @@ def main(_):
                               w_decay=cfg['w_decay'],
                               training=True, cfg=cfg)
     # FREEZE_LAYERS = 145
-    for layer in model.layers:
-        if layer.name == 'arcface_model':
-            layer.trainable = False
+    # for layer in model.layers:
+    #     if layer.name == 'arcface_model':
+    #         layer.trainable = False
 
     ckpt_path = tf.train.latest_checkpoint('./checkpoints222/' + cfg['sub_name'])
     if ckpt_path is not None:
