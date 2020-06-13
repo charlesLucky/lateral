@@ -125,10 +125,13 @@ def main(_):
         save_dir = './data/stage2/SESSION3/'
 
     logging.info("load dataset."+save_dir)
-    dataset_len = cfg['num_samples']
-    steps_per_epoch = dataset_len // batch_size
+
 
     train_dataset = loadTrainDS(save_dir, BATCH_SIZE=batch_size, cfg=cfg)
+    num_elements = tf.data.experimental.cardinality(train_dataset).numpy()
+    # dataset_len = cfg['num_samples']
+    dataset_len = num_elements
+    steps_per_epoch = dataset_len // batch_size
 
     learning_rate = tf.constant(cfg['base_lr'])
     optimizer = tf.keras.optimizers.SGD(
