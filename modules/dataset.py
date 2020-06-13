@@ -340,6 +340,7 @@ def loadTrainDS(test_data_dir,BATCH_SIZE=64,cfg=None):
             x_train = tf.image.random_flip_left_right(x_train)
             x_train = tf.image.random_saturation(x_train, 0.6, 1.4)
             x_train = tf.image.random_brightness(x_train, 0.4)
+            x_train = tf.image.random_contrast(x_train, 0.2, 0.5)
             x_train = x_train / 255
             return x_train
         return transform_images
