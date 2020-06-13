@@ -128,8 +128,8 @@ def tf_hog_descriptor(images, cell_size=8, block_size=2, block_stride=1, n_bins=
     # batch_size = 1
     scale_factor = tf.constant(180 / n_bins, name="scale_factor", dtype=tf.float32)
 
-    img = tf.constant(images, name="ImgBatch", dtype=tf.float32)
-
+    # img = tf.constant(images, name="ImgBatch", dtype=tf.float32)
+    img = images
     if grayscale:
         img = tf.image.rgb_to_grayscale(img, name="ImgGray")
 
