@@ -18,7 +18,7 @@ binary_img: True
 num_classes: 10
 #1848
 num_samples: 400
-epochs: 100
+epochs: 20
 base_lr: 0.001
 w_decay: !!float 5e-4
 save_steps: 100
