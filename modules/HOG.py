@@ -122,7 +122,7 @@ def tf_select_by_idx(a, idx, grayscale):
 
 def tf_hog_descriptor(images, cell_size=8, block_size=2, block_stride=1, n_bins=9,
                       grayscale=False):
-    images = tf.expand_dims(images, 0)
+    # images = tf.expand_dims(images, 0)
     batch_size, height, width, depth = images.shape
     # height, width, depth = images.shape
     # batch_size = 1
