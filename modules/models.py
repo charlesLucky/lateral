@@ -108,7 +108,7 @@ def NormHead(num_classes, w_decay=5e-4, name='NormHead'):
 
     def norm_head(x_in):
         x = inputs = Input(x_in.shape[1:])
-        x = Dense(num_classes, kernel_regularizer=_regularizer(w_decay), activation='sigmoid')(x)
+        x = Dense(num_classes, kernel_regularizer=_regularizer(w_decay))(x) #, activation='sigmoid'
         return Model(inputs, x, name=name)(x_in)
 
     return norm_head
