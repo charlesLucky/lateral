@@ -21,7 +21,7 @@ from tensorflow.keras.layers import Conv2D
 from tensorflow.keras.layers import MaxPooling2D
 from tensorflow.keras.layers import concatenate
 from tensorflow.keras import regularizers
-
+from modules.layers import HOGLayer
 '''
 Multi-scale Dilated Convolution module
  filters, kernel_size, strides=(1, 1), padding='valid'
@@ -32,6 +32,8 @@ def getMDCM(input_shape=None, kernal_size = None, name="Multi-scale-Dilated"):
     img_x = Input(shape=input_shape)
     # kernal_size = (5,3)
     print('[******] user kernel size:',kernal_size)
+
+    # X = X/255
 
     x = Conv2D(16, kernal_size, padding='same', activation='relu', kernel_regularizer=regularizers.l2(weight_decay))(img_x)
     x = BatchNormalization()(x)
@@ -131,7 +133,12 @@ def getMDCM(input_shape=None, kernal_size = None, name="Multi-scale-Dilated"):
     x = MaxPooling2D(pool_size=(2, 2))(x)
     x = Dropout(0.5)(x)
     x = Flatten()(x)
-    output = Dense(512, kernel_regularizer=regularizers.l2(weight_decay))(x)
+
+    hogx = HOGLayer()(img_x)
+
+    merge4 = concatenate([x,hogx])
+
+    output = Dense(512, kernel_regularizer=regularizers.l2(weight_decay))(merge4)
     model = Model(inputs=img_x, outputs=output, name=name)
     # print(model.summary())
     return model
