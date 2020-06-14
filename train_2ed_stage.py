@@ -16,7 +16,7 @@ import modules.dataset as dataset
 
 flags.DEFINE_string('cfg_path', './configs/ResNet50_2ed_stage.yaml', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
-flags.DEFINE_string('epochs', '1', 'which epoch to start')
+flags.DEFINE_integer('epochs', 0, 'which epoch to start')
 flags.DEFINE_string('stage', '2', 'which stage to start')
 flags.DEFINE_enum('mode', 'fit', ['fit', 'eager_tf'],
                   'fit: model.fit, eager_tf: custom GradientTape')
@@ -58,8 +58,6 @@ def main(_):
     print(f'total class:{class_num}')
     steps_per_epoch = cfg['num_samples'] //  FLAGS.batch_size
 
-    epochs, steps = int(FLAGS.epochs), 1
-
     model = ArcFishStackModel(basemodel=basemodel,
                          num_classes=class_num,
                          head_type=cfg['head_type'],
@@ -71,10 +69,16 @@ def main(_):
     if ckpt_path is not None:
         print("[*] load ckpt from {}".format(ckpt_path))
         model.load_weights(ckpt_path)
-        epochs, steps = get_ckpt_inf2(ckpt_path)
+        if FLAGS.epochs == 0:
+            epochs, steps = get_ckpt_inf2(ckpt_path)
+        else:
+            epochs, steps = FLAGS.epochs, 1
     else:
         print("[*] training from scratch.")
-        epochs, steps = 1, 1
+        if FLAGS.epochs == 0:
+            epochs, steps = 1, 1
+        else:
+            epochs, steps = FLAGS.epochs, 1
 
 
     # FREEZE_LAYERS = 145
