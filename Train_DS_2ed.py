@@ -47,6 +47,7 @@ def main(_):
 
     cfg = load_yaml(FLAGS.cfg_path)
     batch_size = FLAGS.batch_size
+    cfg['batch_size'] = batch_size
 
     basemodel = ArcFaceModel(backbone_type=cfg['backbone_type'],
                              num_classes=cfg['num_classes'],
@@ -71,11 +72,12 @@ def main(_):
     #     if layer.name == 'arcface_model':
     #         layer.trainable = False
 
-    ckpt_path = tf.train.latest_checkpoint('./checkpoints222/' + cfg['sub_name'])
+    ckpt_path = tf.train.latest_checkpoint('./checkpoints/' + cfg['sub_name'])
     if ckpt_path is not None:
         print("[*] load ckpt from {}".format(ckpt_path))
         model.load_weights(ckpt_path)
         epochs, steps = get_ckpt_inf3(ckpt_path)
+        epochs = 48
     else:
         print("[*] training from scratch.")
         epochs, steps = 1, 1
@@ -125,6 +127,7 @@ def main(_):
         save_dir = './data/stage2/SESSION3/'
 
     logging.info("load dataset."+save_dir)
+
 
 
     train_dataset = loadTrainDS(save_dir, BATCH_SIZE=batch_size, cfg=cfg)

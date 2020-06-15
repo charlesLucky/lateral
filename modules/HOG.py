@@ -120,12 +120,13 @@ def tf_select_by_idx(a, idx, grayscale):
                                  a[:, :, :, 0]))
 
 
-def tf_hog_descriptor(images, cell_size=8, block_size=2, block_stride=1, n_bins=9,
+def tf_hog_descriptor(images,batch_size,cell_size=8, block_size=2, block_stride=1, n_bins=9,
                       grayscale=False):
     # images = tf.expand_dims(images, 0)
-    batch_size, height, width, depth = images.shape
+    # print("images.shape",images.shape)
+    _, height, width, depth = images.shape
     # height, width, depth = images.shape
-    # batch_size = 1
+    # batch_size = -1
     scale_factor = tf.constant(180 / n_bins, name="scale_factor", dtype=tf.float32)
 
     # img = tf.constant(images, name="ImgBatch", dtype=tf.float32)
@@ -146,6 +147,7 @@ def tf_hog_descriptor(images, cell_size=8, block_size=2, block_stride=1, n_bins=
 
     # masking unwanted gradients of edge pixels
     mask_depth = 1 if grayscale else depth
+    # print(batch_size, height, width, mask_depth)
     g_x_mask = np.ones((batch_size, height, width, mask_depth))
     g_y_mask = np.ones((batch_size, height, width, mask_depth))
     g_x_mask[:, :, (0, -1)] = 0

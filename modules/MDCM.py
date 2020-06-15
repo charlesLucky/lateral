@@ -27,9 +27,9 @@ Multi-scale Dilated Convolution module
  filters, kernel_size, strides=(1, 1), padding='valid'
 '''
 
-def getMDCM(input_shape=None, kernal_size = None, name="Multi-scale-Dilated"):
+def getMDCM(input_shape=None, kernal_size = None, batch_size = 20,ifHOG=False, name="Multi-scale-Dilated"):
     weight_decay = 5e-4
-    img_x = Input(shape=input_shape)
+    img_x = Input(shape=input_shape,batch_size=batch_size)
     # kernal_size = (5,3)
     print('[******] user kernel size:',kernal_size)
 
@@ -134,9 +134,11 @@ def getMDCM(input_shape=None, kernal_size = None, name="Multi-scale-Dilated"):
     x = Dropout(0.5)(x)
     x = Flatten()(x)
 
-    hogx = HOGLayer()(img_x)
-
-    merge4 = concatenate([x,hogx])
+    if ifHOG:
+        hogx = HOGLayer()(img_x)
+        merge4 = concatenate([x, hogx])
+    else:
+        merge4 = x
 
     output = Dense(512, kernel_regularizer=regularizers.l2(weight_decay))(merge4)
     model = Model(inputs=img_x, outputs=output, name=name)
@@ -145,9 +147,13 @@ def getMDCM(input_shape=None, kernal_size = None, name="Multi-scale-Dilated"):
 
 class MDCM(keras.layers.Layer):
 
-  def __init__(self, input_shape=(112,112,3),kernal_size=(3,3)):
+  def __init__(self, input_shape=(112,112,3),kernal_size=(3,3),batch_size=None,ifHOG=False):
     super(MDCM, self).__init__()
-    self.model = getMDCM(input_shape,kernal_size)
+    if ifHOG:
+        if batch_size is None:
+            print("[****] batch size must be given when using HOG")
+            exit(-1)
+    self.model = getMDCM(input_shape,kernal_size,batch_size,ifHOG)
 
   def call(self, inputs):
     return self.model(inputs)

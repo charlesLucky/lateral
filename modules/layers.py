@@ -19,8 +19,12 @@ class HOGLayer(tf.keras.layers.Layer):
     """Make trainable=False freeze BN for real (the og version is sad).
        ref: https://github.com/zzh8829/yolov3-tf2
     """
+
+    def build(self, input_shape):
+        self.batch_size = input_shape[0]
+
     def call(self, x):
-        hog_descriptor, block_hist, hist = tf_hog_descriptor(x, grayscale=True)
+        hog_descriptor, block_hist, hist = tf_hog_descriptor(x, self.batch_size,grayscale=True)
         return hog_descriptor
 
 

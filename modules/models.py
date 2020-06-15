@@ -27,7 +27,7 @@ def _regularizer(weights_decay=5e-4):
     return tf.keras.regularizers.l2(weights_decay)
 
 
-def Backbone(backbone_type='ResNet50', use_pretrain=True):
+def Backbone(backbone_type='ResNet50', use_pretrain=True,batch_size=None):
     """Backbone Model"""
     weights = None
     if use_pretrain:
@@ -50,8 +50,11 @@ def Backbone(backbone_type='ResNet50', use_pretrain=True):
             return MDCM(input_shape=x_in.shape[1:], kernal_size=(3, 3))(x_in)
         elif backbone_type == 'MDCMrect':
             return MDCM(input_shape=x_in.shape[1:], kernal_size=(5, 3))(x_in)
+        elif backbone_type == 'MDCMHOG':
+            return MDCM(input_shape=x_in.shape[1:], kernal_size=(5, 3),ifHOG = True,batch_size=batch_size)(x_in)
         else:
             raise TypeError('backbone_type error!')
+
 
     return backbone
 
@@ -121,7 +124,7 @@ def ArcFaceModel(channels=3, num_classes=None, name='arcface_model',
     """Arc Face Model"""
     x = inputs = Input([cfg['input_size_w'], cfg['input_size_h'], channels], name='input_image')
 
-    x = Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain)(x)
+    x = Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain,batch_size=cfg['batch_size'])(x)
 
     if cfg['rnn']:
         embds1 = OutputLayer(embd_shape, w_decay=w_decay)(x)
@@ -144,7 +147,7 @@ def FishModel(channels=3, num_classes=None, name='fish_model',
               w_decay=5e-4, use_pretrain=True, training=False, cfg=None):
     """Arc Face Model"""
     x = inputs = Input([cfg['input_size_w'], cfg['input_size_h'], channels], name='input_image')
-    x = Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain)(x)
+    x = Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain,batch_size=cfg['batch_size'])(x)
     embds = OutputLayer(embd_shape, w_decay=w_decay)(x)
     logist = NormHead(num_classes=num_classes, w_decay=w_decay)(embds)
     return Model(inputs, logist, name=name)

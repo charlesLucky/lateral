@@ -48,16 +48,16 @@ def main(_):
     set_memory_growth()
 
     cfg = load_yaml(FLAGS.cfg_path)
-
+    batch_size = FLAGS.batch_size
+    cfg['batch_size'] = batch_size
     model = ArcFaceModel(backbone_type=cfg['backbone_type'],
                          num_classes=cfg['num_classes'],
                          head_type=cfg['head_type'],
                          embd_shape=cfg['embd_shape'],
                          w_decay=cfg['w_decay'],
-                         training=True, cfg=cfg)
+                         training=True, cfg=cfg,name=cfg['backbone_type'])
     model.summary(line_length=80)
 
-    batch_size = FLAGS.batch_size
     if cfg['train_dataset']:
         def check_folder(dir_name):
             if not os.path.exists(dir_name):
