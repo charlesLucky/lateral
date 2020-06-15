@@ -17,6 +17,7 @@ import modules.dataset as dataset
 flags.DEFINE_string('cfg_path', './configs/ResNet50_2ed_stage.yaml', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
 flags.DEFINE_integer('epochs', 0, 'which epoch to start')
+flags.DEFINE_integer('tepochs', 10, 'total epoch')
 flags.DEFINE_string('stage', '2', 'which stage to start')
 flags.DEFINE_enum('mode', 'fit', ['fit', 'eager_tf'],
                   'fit: model.fit, eager_tf: custom GradientTape')
@@ -32,7 +33,8 @@ def main(_):
     set_memory_growth()
 
     cfg = load_yaml(FLAGS.cfg_path)
-
+    cfg['batch_size'] = FLAGS.batch_size
+    cfg['epochs'] = FLAGS.tepochs
     basemodel = ArcFaceModel(backbone_type=cfg['backbone_type'],
                          num_classes=cfg['num_classes'],
                          head_type=cfg['head_type'],

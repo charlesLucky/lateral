@@ -34,6 +34,7 @@ flags.DEFINE_enum('mode', 'eager_tf', ['fit', 'eager_tf'],
                   'fit: model.fit, eager_tf: custom GradientTape')
 flags.DEFINE_integer('stage', 2, 'which stage to start')
 flags.DEFINE_integer('batch_size', 64, 'batch size')
+flags.DEFINE_integer('tepochs', 10, 'total epoch')
 
 
 def main(_):
@@ -48,6 +49,7 @@ def main(_):
     cfg = load_yaml(FLAGS.cfg_path)
     batch_size = FLAGS.batch_size
     cfg['batch_size'] = batch_size
+    cfg['epochs'] = FLAGS.tepochs
 
     basemodel = ArcFaceModel(backbone_type=cfg['backbone_type'],
                              num_classes=cfg['num_classes'],
