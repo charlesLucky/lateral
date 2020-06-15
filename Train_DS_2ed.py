@@ -112,8 +112,8 @@ def main(_):
     # renameDir(ds_path, save_dir)
     # renameDir('./data/tmp_tent/test/SESSION2', save_dir)
 
-    # renameDir('./data/tmp_tent/test/SESSION1_LT', './data/stage2/SESSION1_LT/')
-    renameDir('./data/tmp_tent/test/SESSION_LT_AUGMENT', './data/stage2/SESSION1_LT/')
+    renameDir('./data/tmp_tent/test/SESSION1_LT', './data/stage2/SESSION1_LT/')
+    # renameDir('./data/tmp_tent/test/SESSION_LT_AUGMENT', './data/stage2/SESSION1_LT/')
     renameDir('./data/tmp_tent/test/SESSION2', './data/stage2/SESSION2/')
     renameDir('./data/tmp_tent/test/SESSION3', './data/stage2/SESSION3/')
     renameDir('./data/tmp_tent/test/SESSION4', './data/stage2/SESSION4/')
