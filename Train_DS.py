@@ -30,6 +30,12 @@ import tqdm
 import pathlib
 from shutil import copy, rmtree, copytree, copy2
 import time
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from skimage.transform import rescale, resize, downscale_local_mean
+from skimage.io import imsave
+
 flags.DEFINE_string('cfg_path', './configs/ResNet50_1st.yaml', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
 flags.DEFINE_enum('mode', 'eager_tf', ['fit', 'eager_tf'],
@@ -37,6 +43,8 @@ flags.DEFINE_enum('mode', 'eager_tf', ['fit', 'eager_tf'],
 flags.DEFINE_integer('batch_size', 64, 'batch size')
 
 
+def rgb2gray(rgb):
+    return np.dot(rgb[..., :3], [0.299, 0.587, 0.144])
 
 def main(_):
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -77,15 +85,28 @@ def main(_):
                 for images in pic_list:
                     dst_dir = os.path.join(save_dir, "%05d" % cnt)
                     check_folder(dst_dir)
-                    copy(images, dst_dir)
+                    img = mpimg.imread(images)
+                    gray = rgb2gray(img)
+                    # image = cv2.imread(images)
+                    # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                    # scale_ratio = 0.5
+                    # img_resized = cv2.resize(gray, None, fx=scale_ratio, fy=scale_ratio, interpolation=cv2.INTER_CUBIC)
+                    # image = color.rgb2gray(data.astronaut())
+
+                    image_resized = resize(gray, (160, 160),
+                                           anti_aliasing=True)
+                    print(images)
+                    head_tail = os.path.split(images)
+                    imsave(dst_dir+'/'+head_tail[1], image_resized)
+                    # copy(images, dst_dir)
 
                 cnt = cnt + 1
 
         ds_path = './data/tmp_tent/train/'
         save_dir = './data/tmp_tent/train_ds/'
-        renameDir(ds_path, save_dir)
+        # renameDir(ds_path, save_dir)
 
-        logging.info("load ms1m dataset.")
+        logging.info("load fish training dataset.")
         dataset_len = cfg['num_samples']
         steps_per_epoch = dataset_len // batch_size
 

@@ -27,8 +27,13 @@ from modules.evaluations import reportAccu_ds
 import tqdm
 import pathlib
 from shutil import copy,rmtree,copytree,copy2
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from skimage.transform import rescale, resize, downscale_local_mean
+from skimage.io import imsave
 
-flags.DEFINE_string('cfg_path', './configs/ResNet50_1st.yaml', 'config file path')
+flags.DEFINE_string('cfg_path', './configs/ResNet50_2ed_stage.yaml', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
 flags.DEFINE_enum('mode', 'eager_tf', ['fit', 'eager_tf'],
                   'fit: model.fit, eager_tf: custom GradientTape')
@@ -36,6 +41,10 @@ flags.DEFINE_integer('stage', 2, 'which stage to start')
 flags.DEFINE_integer('batch_size', 64, 'batch size')
 flags.DEFINE_integer('tepochs', 10, 'total epoch')
 
+
+
+def rgb2gray(rgb):
+    return np.dot(rgb[..., :3], [0.299, 0.587, 0.144])
 
 def main(_):
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -84,9 +93,9 @@ def main(_):
         print("[*] training from scratch.")
         epochs, steps = 1, 1
 
-    for x in model.trainable_weights:
-        print("trainable:",x.name)
-    print('\n')
+    # for x in model.trainable_weights:
+    #     print("trainable:",x.name)
+    # print('\n')
     model.summary(line_length=80)
 
     def renameDir(ds_path, save_dir):
@@ -107,7 +116,13 @@ def main(_):
             for images in pic_list:
                 dst_dir = os.path.join(save_dir, "%05d" % cnt)
                 check_folder(dst_dir)
-                copy(images, dst_dir)
+                img = mpimg.imread(images)
+                gray = rgb2gray(img)
+                image_resized = resize(gray, (160, 160),
+                                       anti_aliasing=True)
+                head_tail = os.path.split(images)
+                imsave(dst_dir + '/' + head_tail[1], image_resized)
+                # copy(images, dst_dir)
 
             cnt = cnt + 1
 
@@ -197,12 +212,15 @@ def main(_):
             epochs = steps // steps_per_epoch + 1
 
     print("[*] training done!")
-    model.save_weights('checkpoints/{}/e_{}_b_{}.ckpt'.format(
-        cfg['sub_name'], epochs, steps % steps_per_epoch))
+    # model.save_weights('checkpoints/{}/e_{}_b_{}.ckpt'.format(
+    #     cfg['sub_name'], epochs, steps % steps_per_epoch))
 
     File_log_name = 'logs/multistage_Ids10Test_tent_vote2.log'
-    scores_session1, scores_session2, scores_session3, scores_session4 =  reportAccu_ds(cfg, model)
+    scores_session1, scores_session2, scores_session3, scores_session4 =  reportAccu_ds(cfg, model,isShifting=False)
     printstr = f"stage:{cfg['backbone_type']} {FLAGS.stage} {scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
+    print(printstr)
+    scores_session1, scores_session2, scores_session3, scores_session4 = reportAccu_ds(cfg, model, isShifting=True)
+    printstr = f"shifting stage:{cfg['backbone_type']} {FLAGS.stage} {scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
     print(printstr)
     with open(File_log_name, encoding="utf-8", mode="a") as data:
         data.write(printstr)

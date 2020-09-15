@@ -9,10 +9,11 @@ from modules.models import ArcFaceModel,FishModel
 from modules.losses import SoftmaxLoss
 from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf,generatePermKey
 
-import modules.dataset as dataset
-from modules.dataset import generateDataset, aug_data,aug_data_sess1
+from modules.dataset  import loadTrainDS
 
 from modules.LoadFishDataUtil import LoadFishDataUtil
+from tensorflow.keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img, save_img
+
 
 flags.DEFINE_string('cfg_path', './configs/ResNet50_1st.yaml', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
@@ -50,27 +51,13 @@ def main(_):
                          w_decay=cfg['w_decay'],
                          training=True,cfg=cfg)
     model.summary(line_length=80)
-    # for layer in model.layers:
-    #     print('*1:', layer.name)
-    #     if layer.name == 'vgg16':
-    #         layer.summary(line_length=80)
 
     if cfg['train_dataset']:
         logging.info("load ms1m dataset.")
         dataset_len = cfg['num_samples']
         steps_per_epoch = dataset_len // cfg['batch_size']
-        # ##
-        # generateDataset(byIDorByImages=True,
-        #                 train_weight=0.67)  # half as train and half as test  0.67-> 20 as train 10 as test
-        # orig_path = './data/tmp_tent/train/'
-        # SAVE_PATH = './data/tmp_tent/SESSION1_ST_AUGMENT'
-        # aug_data(orig_path, SAVE_PATH, num_aug_per_img=5)
 
-        CLASS_NAMES = None
-        SPLIT_WEIGHTS = (0.9, 0.1, 0.0)  # train cv val vs test
-        myloadData = LoadFishDataUtil( './data/tmp_tent/SESSION1_ST_AUGMENT', cfg['batch_size'], cfg['input_size_w'], cfg['input_size_h'], CLASS_NAMES, SPLIT_WEIGHTS)
-        train_dataset, val_dataset, test_dataset, STEPS_PER_EPOCH, CLASS_NAMES, class_num = myloadData.loadFishData()
-        print(f'total class:{class_num}')
+        train_dataset = loadTrainDS('../data/tmp_tent/train/', BATCH_SIZE=cfg['batch_size'], cfg=cfg)
 
     else:
         logging.info("load fake dataset.")
@@ -98,7 +85,7 @@ def main(_):
         save_freq=cfg['save_steps'] * cfg['batch_size'], verbose=1,
         save_weights_only=True)
 
-    tb_callback = TensorBoard(log_dir='logs/',
+    tb_callback = TensorBoard(log_dir='../logs/',
                               update_freq=cfg['batch_size'] * 5,
                               profile_batch=0)
     tb_callback._total_batches_seen = steps
@@ -107,10 +94,8 @@ def main(_):
 
     model.fit(train_dataset,
               epochs=cfg['epochs'],
-              # validation_data=val_dataset,
-              # validation_steps=20,
-              # steps_per_epoch=steps_per_epoch,
               callbacks=callbacks,
+              steps_per_epoch=10000,
               initial_epoch=epochs - 1)
     print("[*] training done!")
 

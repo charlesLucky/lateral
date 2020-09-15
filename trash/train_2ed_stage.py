@@ -107,7 +107,7 @@ def main(_):
          verbose=1, monitor='loss', save_best_only=True,
         save_weights_only=True)
 
-    tb_callback = TensorBoard(log_dir='logs/',
+    tb_callback = TensorBoard(log_dir='../logs/',
                               update_freq=FLAGS.batch_size * 5,
                               profile_batch=0)
     tb_callback._total_batches_seen = steps

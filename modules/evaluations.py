@@ -14,7 +14,7 @@ from sklearn import metrics
 from scipy.optimize import brentq
 from scipy import interpolate
 import json
-from modules.dataset import loadTestDS
+from modules.dataset import loadTestDS,loadTestDS_shift
 from modules.LoadFishDataUtil import LoadFishDataUtil
 
 
@@ -187,19 +187,19 @@ def reportAccu(BATCH_SIZE, IMG_WIDTH, IMG_HEIGHT, CLASS_NAMES, model_2ed):
 
 
 
-def reportAccu_ds(cfg, model_2ed):
+def reportAccu_ds(cfg, model_2ed,isShifting):
     test_data_dir = './data/stage2/SESSION1_LT/'
 
-    scores_session1 = getAccByvote_ds(model_2ed, test_data_dir, cfg)
+    scores_session1 = getAccByvote_ds(model_2ed, test_data_dir, cfg,isShifting=isShifting)
 
     test_data_dir = './data/stage2/SESSION2/'
-    scores_session2 = getAccByvote_ds(model_2ed, test_data_dir, cfg)
+    scores_session2 = getAccByvote_ds(model_2ed, test_data_dir, cfg,isShifting=isShifting)
 
     test_data_dir = './data/stage2/SESSION3/'
-    scores_session3 = getAccByvote_ds(model_2ed, test_data_dir, cfg)
+    scores_session3 = getAccByvote_ds(model_2ed, test_data_dir, cfg,isShifting=isShifting)
 
     test_data_dir = './data/stage2/SESSION4/'
-    scores_session4 = getAccByvote_ds(model_2ed, test_data_dir, cfg)
+    scores_session4 = getAccByvote_ds(model_2ed, test_data_dir, cfg,isShifting=isShifting)
 
     return scores_session1, scores_session2, scores_session3, scores_session4
 
@@ -216,8 +216,11 @@ def most_frequent(List):
 
     return num
 
-def getAccByvote_ds(model_2ed, test_data_dir, cfg, sess1_class_num=10):
-    sess1_test_dataset = loadTestDS(test_data_dir, BATCH_SIZE=cfg['batch_size'], cfg=cfg)
+def getAccByvote_ds(model_2ed, test_data_dir, cfg, sess1_class_num=10,isShifting=False):
+    if isShifting:
+        sess1_test_dataset = loadTestDS_shift(test_data_dir, BATCH_SIZE=cfg['batch_size'], cfg=cfg)
+    else:
+        sess1_test_dataset = loadTestDS(test_data_dir, BATCH_SIZE=cfg['batch_size'], cfg=cfg)
     ds_it = iter(sess1_test_dataset)
 
     result = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 0: []}
@@ -233,7 +236,7 @@ def getAccByvote_ds(model_2ed, test_data_dir, cfg, sess1_class_num=10):
             mylabel = label[i].numpy()
             result[mylabel].append(int(output[i]))
 
-    print(result)
+    # print(result)
     final = {}
     correct = 0
     for i in result.keys():
@@ -249,7 +252,7 @@ def getAccByvote_ds(model_2ed, test_data_dir, cfg, sess1_class_num=10):
         # print(i,lst,modeval)
         if i == modeval:
             correct = correct + 1
-    print(final)
+    # print(final)
     return correct / sess1_class_num
 
 

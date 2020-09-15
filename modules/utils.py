@@ -26,6 +26,8 @@ def set_memory_growth():
         except RuntimeError as e:
             # Memory growth must be set before GPUs have been initialized
             logging.info(e)
+    else:
+        logging.info("No GPU found!")
 
 
 def load_yaml(load_path):
