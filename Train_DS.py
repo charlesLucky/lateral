@@ -86,14 +86,14 @@ def main(_):
                     dst_dir = os.path.join(save_dir, "%05d" % cnt)
                     check_folder(dst_dir)
                     img = mpimg.imread(images)
-                    gray = rgb2gray(img)
+                    # gray = rgb2gray(img)
                     # image = cv2.imread(images)
                     # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                     # scale_ratio = 0.5
                     # img_resized = cv2.resize(gray, None, fx=scale_ratio, fy=scale_ratio, interpolation=cv2.INTER_CUBIC)
                     # image = color.rgb2gray(data.astronaut())
 
-                    image_resized = resize(gray, (160, 160),
+                    image_resized = resize(img, (320, 320),
                                            anti_aliasing=True)
                     print(images)
                     head_tail = os.path.split(images)
@@ -104,7 +104,7 @@ def main(_):
 
         ds_path = './data/tmp_tent/train/'
         save_dir = './data/tmp_tent/train_ds/'
-        # renameDir(ds_path, save_dir)
+        renameDir(ds_path, save_dir)
 
         logging.info("load fish training dataset.")
         dataset_len = cfg['num_samples']

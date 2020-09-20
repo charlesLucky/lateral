@@ -117,8 +117,8 @@ def main(_):
                 dst_dir = os.path.join(save_dir, "%05d" % cnt)
                 check_folder(dst_dir)
                 img = mpimg.imread(images)
-                gray = rgb2gray(img)
-                image_resized = resize(gray, (160, 160),
+                # gray = rgb2gray(img)
+                image_resized = resize(img, (320, 320),
                                        anti_aliasing=True)
                 head_tail = os.path.split(images)
                 imsave(dst_dir + '/' + head_tail[1], image_resized)
