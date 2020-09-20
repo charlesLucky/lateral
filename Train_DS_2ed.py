@@ -219,7 +219,7 @@ def main(_):
     scores_session1, scores_session2, scores_session3, scores_session4 =  reportAccu_ds(cfg, model,isShifting=False)
     printstr = f"stage:{cfg['backbone_type']} {FLAGS.stage} {scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
     print(printstr)
-    scores_session1, scores_session2, scores_session3, scores_session4 = reportAccu_ds(cfg, model, isShifting=True)
+    scores_session1, scores_session2, scores_session3, scores_session4 = reportAccu_ds(cfg, model, isShifting=100)
     printstr = f"shifting stage:{cfg['backbone_type']} {FLAGS.stage} {scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
     print(printstr)
     with open(File_log_name, encoding="utf-8", mode="a") as data:

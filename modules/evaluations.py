@@ -216,9 +216,9 @@ def most_frequent(List):
 
     return num
 
-def getAccByvote_ds(model_2ed, test_data_dir, cfg, sess1_class_num=10,isShifting=False):
+def getAccByvote_ds(model_2ed, test_data_dir, cfg, sess1_class_num=10,isShifting=0):
     if isShifting:
-        sess1_test_dataset = loadTestDS_shift(test_data_dir, BATCH_SIZE=cfg['batch_size'], cfg=cfg)
+        sess1_test_dataset = loadTestDS_shift(test_data_dir, BATCH_SIZE=cfg['batch_size'], cfg=cfg,shiffting_num=isShifting)
     else:
         sess1_test_dataset = loadTestDS(test_data_dir, BATCH_SIZE=cfg['batch_size'], cfg=cfg)
     ds_it = iter(sess1_test_dataset)

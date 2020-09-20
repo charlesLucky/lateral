@@ -421,7 +421,7 @@ def loadTestDS(test_data_dir, BATCH_SIZE=64, cfg=None):
     return dataset
 
 
-def loadTestDS_shift(test_data_dir, BATCH_SIZE=64, cfg=None):
+def loadTestDS_shift(test_data_dir, BATCH_SIZE=64, cfg=None,shiffting_num=100):
     def get_label(file_path):
         parts = tf.strings.split(file_path, '/')
         label = tf.strings.to_number(parts[-2], out_type=tf.dtypes.int64)
@@ -452,7 +452,7 @@ def loadTestDS_shift(test_data_dir, BATCH_SIZE=64, cfg=None):
     # print(f"we have total {self.image_count} images in this folder")
     # Set `num_parallel_calls` so multiple images are loaded/processed in parallel.
     labeled_ds = list_ds.map(process_path, num_parallel_calls=tf.data.experimental.AUTOTUNE)
-    dataset = labeled_ds.repeat(100).batch(BATCH_SIZE)
+    dataset = labeled_ds.repeat(shiffting_num).batch(BATCH_SIZE)
     dataset = dataset.prefetch(
         buffer_size=tf.data.experimental.AUTOTUNE)
     return dataset
