@@ -142,7 +142,7 @@ def getMDCM(input_shape=None, kernal_size = None, batch_size = 20,ifHOG=False, n
 
     output = Dense(512, kernel_regularizer=regularizers.l2(weight_decay))(merge4)
     model = Model(inputs=img_x, outputs=output, name=name)
-    # print(model.summary())
+    print(model.summary())
     return model
 
 class MDCM(keras.layers.Layer):
