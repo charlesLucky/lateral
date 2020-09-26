@@ -41,6 +41,7 @@ flags.DEFINE_string('gpu', '0', 'which gpu to use')
 flags.DEFINE_enum('mode', 'eager_tf', ['fit', 'eager_tf'],
                   'fit: model.fit, eager_tf: custom GradientTape')
 flags.DEFINE_integer('batch_size', 64, 'batch size')
+flags.DEFINE_integer('rename', 0, 'rename all the file name to number format')
 
 
 def rgb2gray(rgb):
@@ -92,10 +93,13 @@ def main(_):
                     # scale_ratio = 0.5
                     # img_resized = cv2.resize(gray, None, fx=scale_ratio, fy=scale_ratio, interpolation=cv2.INTER_CUBIC)
                     # image = color.rgb2gray(data.astronaut())
+                    # print(img.shape[1]) # 图片的尺寸
+
+                    img = img[:, round(img.shape[1]/2):, :]
 
                     image_resized = resize(img, (320, 320),
                                            anti_aliasing=True)
-                    print(images)
+                    # print(images)
                     head_tail = os.path.split(images)
                     imsave(dst_dir+'/'+head_tail[1], image_resized)
                     # copy(images, dst_dir)
@@ -104,7 +108,8 @@ def main(_):
 
         ds_path = './data/tmp_tent/train/'
         save_dir = './data/tmp_tent/train_ds/'
-        # renameDir(ds_path, save_dir)
+        if FLAGS.rename:
+            renameDir(ds_path, save_dir)
 
         logging.info("load fish training dataset.")
         dataset_len = cfg['num_samples']

@@ -136,6 +136,7 @@ def getMDCM(input_shape=None, kernal_size = None, batch_size = 20,ifHOG=False, n
 
     if ifHOG:
         hogx = HOGLayer()(img_x)
+        # hogx = Flatten()(hogx)
         merge4 = concatenate([x, hogx])
     else:
         merge4 = x

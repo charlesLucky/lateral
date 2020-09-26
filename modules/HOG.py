@@ -14,10 +14,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 import os
 import numpy as np
 import tensorflow as tf
-import matplotlib.pyplot as plt
-from skimage import data, color
-
-from PIL import Image
 
 
 def get_sobel_kernel(ksize):
