@@ -119,6 +119,7 @@ def main(_):
                 check_folder(dst_dir)
                 img = mpimg.imread(images)
                 # gray = rgb2gray(img)
+                img = img[:, round(img.shape[1] / 2):, :]
                 image_resized = resize(img, (320, 320),
                                        anti_aliasing=True)
                 head_tail = os.path.split(images)
