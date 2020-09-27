@@ -141,16 +141,45 @@ def ArcFaceModel(channels=3, num_classes=None, name='arcface_model',
         return Model(inputs, embds, name=name)
 
 
-def FishModel(channels=3, num_classes=None, name='fish_model',
-              margin=0.5, logist_scale=64, embd_shape=512,
-              head_type='ArcHead', backbone_type='ResNet50',
-              w_decay=5e-4, use_pretrain=True, training=False, cfg=None):
+
+def FishModel(channels=3, num_classes=None, name='arcface_model',
+                 margin=0.5, logist_scale=64, embd_shape=512,
+                 head_type='ArcHead', backbone_type='ResNet50',
+                 w_decay=5e-4, use_pretrain=True, training=False, cfg=None):
     """Arc Face Model"""
     x = inputs = Input([cfg['input_size_w'], cfg['input_size_h'], channels], name='input_image')
-    x = Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain,batch_size=cfg['batch_size'])(x)
-    embds = OutputLayer(embd_shape, w_decay=w_decay)(x)
-    logist = NormHead(num_classes=num_classes, w_decay=w_decay)(embds)
-    return Model(inputs, logist, name=name)
+
+    x1 = Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain,batch_size=cfg['batch_size'])(x[:,:160,:160,:])
+    x2 = Backbone(backbone_type='VGG19', use_pretrain=use_pretrain,batch_size=cfg['batch_size'])(x[:,161:,161:,:])
+    x1 = Flatten()(x1)
+    x2 = Flatten()(x2)
+    x = concatenate([x1,x2])
+
+    if cfg['rnn']:
+        embds1 = OutputLayer(embd_shape, w_decay=w_decay)(x)
+        embds2 = OutputLayerRNN(embd_shape, w_decay=w_decay)(x)
+        embds = concatenate([embds1, embds2])
+    else:
+        embds = OutputLayer(embd_shape, w_decay=w_decay)(x)
+
+    if training:
+        assert num_classes is not None
+        logist = NormHead(num_classes=num_classes, w_decay=w_decay)(embds)
+        return Model(inputs, logist, name=name)
+    else:
+        return Model(inputs, embds, name=name)
+
+
+# def FishModel(channels=3, num_classes=None, name='fish_model',
+#               margin=0.5, logist_scale=64, embd_shape=512,
+#               head_type='ArcHead', backbone_type='ResNet50',
+#               w_decay=5e-4, use_pretrain=True, training=False, cfg=None):
+#     """Arc Face Model"""
+#     x = inputs = Input([cfg['input_size_w'], cfg['input_size_h'], channels], name='input_image')
+#     x = Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain,batch_size=cfg['batch_size'])(x)
+#     embds = OutputLayer(embd_shape, w_decay=w_decay)(x)
+#     logist = NormHead(num_classes=num_classes, w_decay=w_decay)(embds)
+#     return Model(inputs, logist, name=name)
 
 
 def ArcFishStackModel(basemodel=None, channels=3, num_classes=None, name='arcface_model',

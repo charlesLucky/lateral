@@ -59,7 +59,7 @@ def main(_):
     cfg = load_yaml(FLAGS.cfg_path)
     batch_size = FLAGS.batch_size
     cfg['batch_size'] = batch_size
-    model = ArcFaceModel(backbone_type=cfg['backbone_type'],
+    model = FishModel(backbone_type=cfg['backbone_type'],
                          num_classes=cfg['num_classes'],
                          head_type=cfg['head_type'],
                          embd_shape=cfg['embd_shape'],
