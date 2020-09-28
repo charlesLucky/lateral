@@ -18,7 +18,7 @@ import tensorflow as tf
 
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 
-from modules.models import ArcFaceModel,ArcFishStackModel
+from modules.models import ArcFaceModel,ArcFishStackModel,FishModel
 from modules.losses import SoftmaxLoss
 from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf2,generatePermKey,get_ckpt_inf3
 
@@ -61,7 +61,7 @@ def main(_):
     cfg['batch_size'] = batch_size
     cfg['epochs'] = FLAGS.tepochs
 
-    basemodel = ArcFaceModel(backbone_type=cfg['backbone_type'],
+    basemodel = FishModel(backbone_type=cfg['backbone_type'],
                              num_classes=cfg['num_classes'],
                              head_type=cfg['head_type'],
                              embd_shape=cfg['embd_shape'],
