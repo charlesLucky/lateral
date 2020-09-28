@@ -149,8 +149,9 @@ def FishModel(channels=3, num_classes=None, name='arcface_model',
     """Arc Face Model"""
     x = inputs = Input([cfg['input_size_w'], cfg['input_size_h'], channels], name='input_image')
     backbonemodel = Model(inputs, Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain,batch_size=cfg['batch_size'])(x), name="backbone1")
+    backbonemodel2 = Model(inputs, Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain,batch_size=cfg['batch_size'])(x), name="backbone2")
     x1 = backbonemodel(x[:,:160,:160,:])
-    x2 = backbonemodel(x[:,160:,160:,:])
+    x2 = backbonemodel2(x[:,160:,160:,:])
     x1 = Flatten()(x1)
     x2 = Flatten()(x2)
     x = concatenate([x1,x2])
