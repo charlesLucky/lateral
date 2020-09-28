@@ -41,6 +41,7 @@ flags.DEFINE_integer('stage', 2, 'which stage to start')
 flags.DEFINE_integer('batch_size', 64, 'batch size')
 flags.DEFINE_integer('tepochs', 10, 'total epoch')
 flags.DEFINE_integer('rename', 0, 'rename all the file name to number format')
+flags.DEFINE_integer('isShifting', 100, 'how many random shiftting')
 
 
 
@@ -222,7 +223,7 @@ def main(_):
     scores_session1, scores_session2, scores_session3, scores_session4 =  reportAccu_ds(cfg, model,isShifting=False)
     printstr = f"stage:{cfg['backbone_type']} {FLAGS.stage} {scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
     print(printstr)
-    scores_session1, scores_session2, scores_session3, scores_session4 = reportAccu_ds(cfg, model, isShifting=100)
+    scores_session1, scores_session2, scores_session3, scores_session4 = reportAccu_ds(cfg, model, isShifting=FLAGS.isShifting)
     printstr = f"shifting stage:{cfg['backbone_type']} {FLAGS.stage} {scores_session1}  {scores_session2}  {scores_session3}  {scores_session4}\n"
     print(printstr)
     with open(File_log_name, encoding="utf-8", mode="a") as data:
