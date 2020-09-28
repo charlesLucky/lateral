@@ -158,7 +158,7 @@ def main(_):
     num_elements = num_imgs
     # dataset_len = cfg['num_samples']
     dataset_len = num_elements
-    steps_per_epoch = dataset_len // batch_size
+    steps_per_epoch = round(dataset_len // batch_size)+1
 
     learning_rate = tf.constant(cfg['base_lr'])
     optimizer = tf.keras.optimizers.SGD(
