@@ -23,7 +23,7 @@ from modules.losses import SoftmaxLoss
 from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf, generatePermKey
 
 from modules.dataset import loadTrainDS
-
+from PIL import Image
 from modules.LoadFishDataUtil import LoadFishDataUtil
 from tensorflow.keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img, save_img
 import tqdm
@@ -148,7 +148,10 @@ def main(_):
             if steps % 5 == 0:
                 start = time.time()
             inputs, labels = next(train_dataset)
-
+            # i = Image.fromarray(inputs[0,].numpy(), "RGB")
+            # i.show()
+            # print(inputs[0,].shape)
+            # sec = input('Let us wait for user input. Let me know how many seconds to sleep now.\n')
             with tf.GradientTape() as tape:
                 logist = model(inputs, training=True)
                 # print(logist)
