@@ -64,7 +64,7 @@ def main(_):
                          head_type=cfg['head_type'],
                          embd_shape=cfg['embd_shape'],
                          w_decay=cfg['w_decay'],
-                         training=True, cfg=cfg,name=cfg['backbone_type'],localnetworkalign=False)
+                         training=True, cfg=cfg,name=cfg['backbone_type'])
     model.summary(line_length=80)
 
     if cfg['train_dataset']:
