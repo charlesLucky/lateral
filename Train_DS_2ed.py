@@ -62,7 +62,7 @@ def main(_):
     cfg['batch_size'] = batch_size
     cfg['epochs'] = FLAGS.tepochs
 
-    basemodel = FishModel(backbone_type=cfg['backbone_type'],
+    basemodel = ArcFaceModel(backbone_type=cfg['backbone_type'],
                              num_classes=cfg['num_classes'],
                              head_type=cfg['head_type'],
                              embd_shape=cfg['embd_shape'],
@@ -81,9 +81,9 @@ def main(_):
                               w_decay=cfg['w_decay'],
                               training=True, cfg=cfg)
     # FREEZE_LAYERS = 145
-    # for layer in model.layers:
-    #     if layer.name == 'arcface_model':
-    #         layer.trainable = False
+    for layer in model.layers:
+        if layer.name == 'arcface_model':
+            layer.trainable = False
 
     ckpt_path = tf.train.latest_checkpoint('./checkpoints/' + cfg['sub_name'])
     if ckpt_path is not None:
