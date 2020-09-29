@@ -8,7 +8,8 @@ from tensorflow.keras.layers import (
     GRU,
     SimpleRNN,
     Embedding,
-    concatenate
+    concatenate,
+    Multiply
 )
 from tensorflow.keras.applications import (
     MobileNetV2,
@@ -21,6 +22,8 @@ from tensorflow.keras.applications import (
     VGG19
 )
 from modules.MDCM import MDCM
+from modules.LocalNet import Localnet
+from modules.bilinear_sampler import bilinear_sampler
 from .layers import (
     BatchNormalization,
     ArcMarginPenaltyLogists
@@ -153,21 +156,31 @@ def ArcFaceModel(channels=3, num_classes=None, name='arcface_model',
     else:
         return Model(inputs, embds, name=name)
 
-
-
 def FishModel(channels=3, num_classes=None, name='arcface_model',
                  margin=0.5, logist_scale=64, embd_shape=512,
                  head_type='ArcHead', backbone_type='ResNet50',
-                 w_decay=5e-4, use_pretrain=True, training=False, cfg=None):
+                 w_decay=5e-4, use_pretrain=True, training=False, cfg=None,localnetworkalign=False):
     """Arc Face Model"""
     x = inputs = Input([cfg['input_size_w'], cfg['input_size_h'], channels], name='input_image')
-    backbonemodel = Model(inputs, Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain,batch_size=cfg['batch_size'])(x), name="backbone1")
-    backbonemodel2 = Model(inputs, Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain,batch_size=cfg['batch_size'])(x), name="backbone2")
+    print("before***",x)
+    if localnetworkalign:
+        trans_A = Localnet()(x)
+        print(trans_A)
+        # x = tf.matmul(x, tf.transpose(trans_A))
+        # x = Multiply()([trans_A,x])
+        x = bilinear_sampler(x, trans_A[:,0],trans_A[:,1])
+    print("after***",x)
+
+    backbonemodel = Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain,batch_size=cfg['batch_size'])
+    # backbonemodel2 = Model(inputs, Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain,batch_size=cfg['batch_size'])(x), name="backbone2")
+
     x1 = backbonemodel(x[:,:,:round(cfg['input_size_h']/2),:])
-    x2 = backbonemodel2(x[:,:,round(cfg['input_size_h']/2):,:])
+    x2 = backbonemodel(x[:,:,round(cfg['input_size_h']/2):,:])
+
     x1 = Flatten()(x1)
     x2 = Flatten()(x2)
     x = concatenate([x1,x2])
+    # x = Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain,batch_size=cfg['batch_size'])(x)
 
     if cfg['rnn']:
         embds1 = OutputLayer(embd_shape, w_decay=w_decay)(x)

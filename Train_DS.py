@@ -64,7 +64,7 @@ def main(_):
                          head_type=cfg['head_type'],
                          embd_shape=cfg['embd_shape'],
                          w_decay=cfg['w_decay'],
-                         training=True, cfg=cfg,name=cfg['backbone_type'])
+                         training=True, cfg=cfg,name=cfg['backbone_type'],localnetworkalign=False)
     model.summary(line_length=80)
 
     if cfg['train_dataset']:
@@ -155,6 +155,9 @@ def main(_):
             with tf.GradientTape() as tape:
                 logist = model(inputs, training=True)
                 # print(logist)
+                trans_a = logist[1]
+                logist = logist[0]
+                print(trans_a)
                 reg_loss = tf.reduce_sum(model.losses)
                 pred_loss = loss_fn(labels, logist) * 10
                 total_loss = pred_loss + reg_loss
