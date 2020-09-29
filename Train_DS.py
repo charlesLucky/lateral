@@ -154,10 +154,7 @@ def main(_):
             # sec = input('Let us wait for user input. Let me know how many seconds to sleep now.\n')
             with tf.GradientTape() as tape:
                 logist = model(inputs, training=True)
-                # print(logist)
-                trans_a = logist[1]
-                logist = logist[0]
-                print(trans_a)
+
                 reg_loss = tf.reduce_sum(model.losses)
                 pred_loss = loss_fn(labels, logist) * 10
                 total_loss = pred_loss + reg_loss

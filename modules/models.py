@@ -162,20 +162,25 @@ def FishModel(channels=3, num_classes=None, name='arcface_model',
                  w_decay=5e-4, use_pretrain=True, training=False, cfg=None,localnetworkalign=False):
     """Arc Face Model"""
     x = inputs = Input([cfg['input_size_w'], cfg['input_size_h'], channels], name='input_image')
-    print("before***",x)
+    x1 = x[:,:,:round(cfg['input_size_h']/2),:]
+    x2 = x[:,:,round(cfg['input_size_h']/2):,:]
+
     if localnetworkalign:
         trans_A = Localnet()(x)
         print(trans_A)
         # x = tf.matmul(x, tf.transpose(trans_A))
         # x = Multiply()([trans_A,x])
-        x = bilinear_sampler(x, trans_A[:,0],trans_A[:,1])
-    print("after***",x)
+        # x = bilinear_sampler(x, trans_A[:,0],trans_A[:,1])
 
-    backbonemodel = Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain,batch_size=cfg['batch_size'])
-    # backbonemodel2 = Model(inputs, Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain,batch_size=cfg['batch_size'])(x), name="backbone2")
+    basenetwork = Model(inputs, Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain,batch_size=cfg['batch_size'])(x1), name="backbone1")
+    # backbonemodel = Model(inputs, Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain,batch_size=cfg['batch_size'])(x1), name="backbone1")
+    # backbonemodel2 = Model(inputs, Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain,batch_size=cfg['batch_size'])(x2), name="backbone2")
 
-    x1 = backbonemodel(x[:,:,:round(cfg['input_size_h']/2),:])
-    x2 = backbonemodel(x[:,:,round(cfg['input_size_h']/2):,:])
+    x1 = basenetwork(x1)
+    x2 = basenetwork(x2)
+
+    # x1 = backbonemodel(x[:, :, :round(cfg['input_size_h'] / 2), :])
+    # x2 = backbonemodel(x[:, :, round(cfg['input_size_h'] / 2):, :])
 
     x1 = Flatten()(x1)
     x2 = Flatten()(x2)
