@@ -67,59 +67,54 @@ def main(_):
                          training=True, cfg=cfg,name=cfg['backbone_type'])
     model.summary(line_length=80)
 
-    if cfg['train_dataset']:
-        def check_folder(dir_name):
-            if not os.path.exists(dir_name):
-                os.makedirs(dir_name)
-            return dir_name
+    def check_folder(dir_name):
+        if not os.path.exists(dir_name):
+            os.makedirs(dir_name)
+        return dir_name
 
-        def renameDir(ds_path, save_dir):
-            if os.path.exists(save_dir):
-                rmtree(save_dir)
+    def renameDir(ds_path, save_dir):
+        if os.path.exists(save_dir):
+            rmtree(save_dir)
 
-            dir_list = [dI for dI in os.listdir(ds_path) if os.path.isdir(os.path.join(ds_path, dI))]
-            cnt = 0;
-            for dir_name in tqdm.tqdm(dir_list):
-                data_dir = pathlib.Path(os.path.join(ds_path, dir_name))
-                pic_list = list(data_dir.glob('*.png'))
+        dir_list = [dI for dI in os.listdir(ds_path) if os.path.isdir(os.path.join(ds_path, dI))]
+        cnt = 0;
+        for dir_name in tqdm.tqdm(dir_list):
+            data_dir = pathlib.Path(os.path.join(ds_path, dir_name))
+            pic_list = list(data_dir.glob('*.png'))
 
-                for images in pic_list:
-                    dst_dir = os.path.join(save_dir, "%05d" % cnt)
-                    check_folder(dst_dir)
-                    img = mpimg.imread(images)
-                    # gray = rgb2gray(img)
-                    # image = cv2.imread(images)
-                    # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-                    # scale_ratio = 0.5
-                    # img_resized = cv2.resize(gray, None, fx=scale_ratio, fy=scale_ratio, interpolation=cv2.INTER_CUBIC)
-                    # image = color.rgb2gray(data.astronaut())
-                    # print(img.shape[1]) # 图片的尺寸
+            for images in pic_list:
+                dst_dir = os.path.join(save_dir, "%05d" % cnt)
+                check_folder(dst_dir)
+                img = mpimg.imread(images)
+                # gray = rgb2gray(img)
+                # image = cv2.imread(images)
+                # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                # scale_ratio = 0.5
+                # img_resized = cv2.resize(gray, None, fx=scale_ratio, fy=scale_ratio, interpolation=cv2.INTER_CUBIC)
+                # image = color.rgb2gray(data.astronaut())
+                # print(img.shape[1]) # 图片的尺寸
 
-                    img = img[:, round(img.shape[1]/2):, :]
+                img = img[:, round(img.shape[1] / 2):, :]
 
-                    image_resized = resize(img, (320, 320),
-                                           anti_aliasing=True)
-                    # print(images)
-                    head_tail = os.path.split(images)
-                    imsave(dst_dir+'/'+head_tail[1], image_resized)
-                    # copy(images, dst_dir)
+                image_resized = resize(img, (320, 320),
+                                       anti_aliasing=True)
+                # print(images)
+                head_tail = os.path.split(images)
+                imsave(dst_dir + '/' + head_tail[1], image_resized)
+                # copy(images, dst_dir)
 
-                cnt = cnt + 1
+            cnt = cnt + 1
 
-        ds_path = './data/tmp_tent/train/'
-        save_dir = './data/tmp_tent/train_ds/'
-        if FLAGS.rename:
-            renameDir(ds_path, save_dir)
+    ds_path = './data/tmp_tent/train/'
+    save_dir = './data/tmp_tent/train_ds/'
+    if FLAGS.rename:
+        renameDir(ds_path, save_dir)
 
-        logging.info("load fish training dataset.")
-        dataset_len = cfg['num_samples']
-        steps_per_epoch = dataset_len // batch_size
+    logging.info("load fish training dataset.")
+    dataset_len = cfg['num_samples']
+    steps_per_epoch = dataset_len // batch_size
 
-        train_dataset = loadTrainDS(save_dir, BATCH_SIZE=batch_size, cfg=cfg)
-
-    else:
-        logging.info("load fake dataset.")
-        steps_per_epoch = 1
+    train_dataset = loadTrainDS(save_dir, BATCH_SIZE=batch_size, cfg=cfg)
 
     learning_rate = tf.constant(cfg['base_lr'])
     optimizer = tf.keras.optimizers.SGD(
