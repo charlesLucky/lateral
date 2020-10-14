@@ -220,56 +220,28 @@ Note:
 
 Stage 1: Training the model based on 319 IDs.
 ```bash
-# traning with tf.GradientTape(), great for debugging.
-python train.py --mode="eager_tf" --cfg_path="./configs/config_arc/arc_res50.yaml"
-
-# training with model.fit().
-python train.py --mode="fit" --cfg_path="./configs/config_arc/arc_res50.yaml"
-```
-Stage 2: Training the deep IoM:
-
-```bash
-# traning with tf.GradientTape(),For deep IoM, can only train by eager_tf
-nohup python -u train_twostage_tripletloss_online.py --cfg_path ./configs/config_10/iom_res50_twostage_1layer_hard_arcloss_256x8_0.yaml >1layer_hard_arcloss_256x8_0.log & 
-
-
-### Testing the performance of deep IoM
-
-```bash
-python  test_twostage_iom.py --cfg_path ./configs/config_10/iom_res50_twostage_1layer_hard_arcloss_256x8_0.yaml 
-```
-#IJBC-Evaluation
-Please run `IJB_11.py` first, then run `IJB_1N.py `secondly.
-
-
-# Using-InsightFace-pre_build-model
-In this work, we also try to adopt the original pre-build model by InsightFace team. However, their original model is trained on Mxnet, which is not fit tensorflow directly. Hence we perform the model conversion firstly to generate a tensorflow model. 
-
-We adopted their ResNet100 model, the original performance is:
-
-<table><thead><tr><th>Method</th><th>LFW(%)</th><th>CFP-FP(%)</th><th>AgeDB-30(%)</th><th>MegaFace(%)</th></tr></thead><tbody><tr><td>Ours</td><td>99.77</td><td>98.27</td><td>98.28</td><td>98.47</td></tr></tbody></table>
-
-While after the model conversion, the generated TF2 model performance is:
-
-<table><thead><tr><th></th><th>LFW</th><th>AgeDB30</th><th>CFP - FP</th></tr></thead><tbody><tr><td>Accuracy</td><td>0.9960</td><td>0.9752</td><td>0.9643</td></tr><tr><td>EER</td><td>0.0040</td><td>0.0305</td><td>0.0387</td></tr><tr><td>AUC</td><td>0.9987</td><td>0.9900</td><td>0.9877</td></tr><tr><td>Threshold</td><td>0.7340</td><td>0.7710</td><td>0.8320</td></tr></tbody></table>
-
-There is a slightly accuracy drop, but it is still better than our own trained model.
-
-To use this pre-build model, just set the **backbone_type** in the config file as Insight_ResNet100:
+# traning with tf.GradientTape()
+(base) xingbo@* ~/lateral$ python Train_DS.py --cfg_path ./configs/VGG16_1st.yaml --rename 1
 
 ```
-batch_size: 16
-eval_batch_size: 16
-input_size: 112
-embd_shape: 512
-sub_name: 'arc_Insight_ResNet100'
-backbone_type: 'Insight_ResNet100' # 'ResNet50', 'MobileNetV2'
-head_type: ArcHead # 'ArcHead', 'NormHead'
-is_ccrop: False # central-cropping or not
+Stage 2: Testing with the remaining 10 IDs:
+
+In reality, given a fish, multiple images of one fish can be captured and used for identification. To make full use of those available information, all images of this fish are used to predict the label, then the mode of those predicted labels will be used as the final predicted label. 
+
+Execute below command:
+
+```python
+(base) xingbo@* ~/lateral$ python Test_DS_2ed.py --cfg_path ./configs/VGG16_2ed.yaml
 ```
 
-Please note that the weight file is required, it is stored in `pre_models/resnet100/resnet100.npy`
+The accuracy is shown as below:
 
-The weight file and other related files can be downloaded from [this link](https://drive.google.com/file/d/1aOy12NnkEBmzLa9atQQCAlKiRO8zck49/view?usp=sharing).
+| VGG16 | SL1 | SL2 | SL3  | SL4   |
+|-------|-----|-----|------|-------|
+| SL1   |   1 | 0.7 |  0.3 |   0.2 |
+| SL2   |     |   1 | 0.65 | 0.275 |
+| SL3   |     |     |    1 |  0.45 |
+| SL4   |     |     |      |     1 |
+
 
 ## References
