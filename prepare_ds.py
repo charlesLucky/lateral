@@ -26,7 +26,7 @@ flags.DEFINE_string('dataset_path', './data/tmp_tent/SESSION1_ST_AUGMENT',
                     'path to dataset')
 flags.DEFINE_string('output_path', './data/New_ROI_STLT_bin.tfrecord',
                     'path to ouput tfrecord')
-flags.DEFINE_string('stage', '0',
+flags.DEFINE_string('stage', '1',
                     'which stage,1,2')
 flags.DEFINE_string('ds_remark', 'SESSION_TENT_NEW',
                     'SESSION_TENT_NEW,SESSION_TENT,SESSION_AQUARIUM_NEW,SESSION_AQUARIUM')
@@ -60,26 +60,26 @@ def main(_):
         # dataset_path = SAVE_PATH
         # output_path = './data/New_ROI_STLT_bin.tfrecord'
         # Label_dict = labelToDigitDict(dataset_path)
-    elif FLAGS.stage == '2':
-        TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
-        if os.path.exists(TRAIN_SAVE_PATH):
-            rmtree(TRAIN_SAVE_PATH)
-        aug_data_sess1('./data/tmp_tent/test/SESSION1_LT', TRAIN_SAVE_PATH, k=0)  # augmentation
-        dataset_path = TRAIN_SAVE_PATH
-        output_path = './data/New_ROI_LT1_bin.tfrecord'
-        Label_dict = labelToDigitDict(dataset_path)
-        with open('data/Label_dict_2ed.json', 'w') as fp:
-            json.dump(Label_dict, fp, sort_keys=True, indent=4)
-    elif FLAGS.stage == '3':
-        TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
-        if os.path.exists(TRAIN_SAVE_PATH):
-            rmtree(TRAIN_SAVE_PATH)
-        aug_data_sess('./data/tmp_tent/test/SESSION2', TRAIN_SAVE_PATH, k=0)
-    elif FLAGS.stage == '4':
-        TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
-        if os.path.exists(TRAIN_SAVE_PATH):
-            rmtree(TRAIN_SAVE_PATH)
-        aug_data_sess('./data/tmp_tent/test/SESSION3', TRAIN_SAVE_PATH, k=0)
+    # elif FLAGS.stage == '2':
+    #     TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
+    #     if os.path.exists(TRAIN_SAVE_PATH):
+    #         rmtree(TRAIN_SAVE_PATH)
+    #     aug_data_sess1('./data/tmp_tent/test/SESSION1_LT', TRAIN_SAVE_PATH, k=0)  # augmentation
+    #     dataset_path = TRAIN_SAVE_PATH
+    #     output_path = './data/New_ROI_LT1_bin.tfrecord'
+    #     Label_dict = labelToDigitDict(dataset_path)
+    #     with open('data/Label_dict_2ed.json', 'w') as fp:
+    #         json.dump(Label_dict, fp, sort_keys=True, indent=4)
+    # elif FLAGS.stage == '3':
+    #     TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
+    #     if os.path.exists(TRAIN_SAVE_PATH):
+    #         rmtree(TRAIN_SAVE_PATH)
+    #     aug_data_sess('./data/tmp_tent/test/SESSION2', TRAIN_SAVE_PATH, k=0)
+    # elif FLAGS.stage == '4':
+    #     TRAIN_SAVE_PATH = './data/tmp_tent/test/SESSION_LT_AUGMENT'
+    #     if os.path.exists(TRAIN_SAVE_PATH):
+    #         rmtree(TRAIN_SAVE_PATH)
+    #     aug_data_sess('./data/tmp_tent/test/SESSION3', TRAIN_SAVE_PATH, k=0)
     else:
         print('[*] stage should be given!')
 
