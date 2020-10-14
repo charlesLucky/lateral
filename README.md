@@ -244,4 +244,7 @@ The accuracy is shown as below:
 | SL4   |     |     |      |     1 |
 
 
+
+Note:
+-  `SL1` : Session Long_term 1
 ## References
