@@ -6,7 +6,7 @@ input_size_w: 44
 input_size_h: 44
 embd_shape: 512
 sub_name: 'VGG16'
-backbone_type: 'VGG16' # 'ResNet50', 'MobileNetV2' VGG16
+backbone_type: 'VGG16_1028' # 'ResNet50', 'MobileNetV2' VGG16
 head_type: NormHead # 'NormHead'
 is_ccrop: True # central-cropping or not
 rnn: False
