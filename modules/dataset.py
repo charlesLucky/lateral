@@ -354,7 +354,7 @@ def loadTrainDS(test_data_dir, BATCH_SIZE=64, cfg=None):
 
     def _transform_images(is_ccrop=False, cfg=None):
         def transform_images(x_train):
-            x_train = tf.image.resize(x_train, (64, 64))
+            x_train = tf.image.resize(x_train, (160, 160))
             x_train = tf.image.random_crop(x_train, (cfg['input_size_w'], cfg['input_size_h'], 3))
             x_train = tf.image.random_flip_left_right(x_train)
             x_train = tf.image.random_saturation(x_train, 0.6, 0.8)
@@ -429,7 +429,7 @@ def loadTestDS_shift(test_data_dir, BATCH_SIZE=64, cfg=None,shiffting_num=100):
 
     def _transform_images(is_ccrop=False, cfg=None):
         def transform_images(x_train):
-            x_train = tf.image.resize(x_train, (64, 64))
+            x_train = tf.image.resize(x_train, (160, 160))
             x_train = tf.image.random_crop(x_train, (cfg['input_size_w'], cfg['input_size_h'], 3))
             # x_train = tf.image.random_flip_left_right(x_train)
             x_train = tf.image.random_saturation(x_train, 0.6, 1.4)
