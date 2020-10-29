@@ -14,7 +14,7 @@ rnn: False
 num_classes: 319
 #1848
 num_samples: 10000
-epochs: 10000
+epochs: 50
 base_lr: 0.01
 w_decay: !!float 5e-4
 save_steps: 10000
