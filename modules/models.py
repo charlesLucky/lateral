@@ -224,10 +224,10 @@ def ArcFishStackModel(basemodel=None, channels=3, num_classes=None, name='arcfac
     assert num_classes is not None
     x = Dense(512, kernel_regularizer=_regularizer(w_decay), activation='relu')(embds)
     x = BatchNormalization()(x)
-    x = Dropout(rate=0.5)(x)
+    # x = Dropout(rate=0.5)(x)
     x = Dense(512, kernel_regularizer=_regularizer(w_decay), activation='relu')(x)
     x = BatchNormalization()(x)
-    x = Dropout(rate=0.5)(x)
+    # x = Dropout(rate=0.5)(x)
     x = Dense(256, kernel_regularizer=_regularizer(w_decay))(x)
     logist = NormHead(num_classes=num_classes, w_decay=w_decay)(x)
     return Model(inputs, logist, name=name)
