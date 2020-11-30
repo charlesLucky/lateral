@@ -121,7 +121,7 @@ def main(_):
                 img = mpimg.imread(images)
                 # gray = rgb2gray(img)
                 img = img[:, round(img.shape[1] / 2):, :]
-                image_resized = resize(img, (320, 320),
+                image_resized = resize(img, (cfg['input_size_w']*1.2, cfg['input_size_h']*1.2),
                                        anti_aliasing=True)
                 head_tail = os.path.split(images)
                 imsave(dst_dir + '/' + head_tail[1], image_resized)
